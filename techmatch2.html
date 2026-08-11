@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TechMatch</title>
+
+    <style>
+
+        body {
+            font-family: Arial;
+            text-align: center;
+        }
+
+        
+        .grupo {
+            margin-bottom: 40px;
+        }
+
+        
+        .opcoes {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .peca {
+            width: 200px;
+            height: 180px;
+            border: 3px solid transparent;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .peca:hover {
+            border: 3px solid gray;
+        }
+
+      
+        .selecionada {
+            border: 3px solid blue;
+        }
+
+        .peca img {
+            width: 100%;
+            height: 140px;
+            object-fit: contain;
+        }
+
+        #resultado {
+            margin-top: 30px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <h1>Escolha suas peças</h1>
+
+
+   
+    <div class="grupo">
+
+        <h2>Processadores</h2>
+
+        <div class="opcoes">
+
+            <div class="peca"
+                 id="processador1"
+                 onclick="selecionarProcessador(1)">
+
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFzdkDU8uqlOLHYliD4Lyu_96bQvFKAfQ1LWAk1M1fow&s=10" alt="Processador 1">
+
+                <p>Intel Core i5 1150</p>
+
+            </div>
+
+
+            <div class="peca"
+                 id="processador2"
+                 onclick="selecionarProcessador(2)">
+
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4J03wVWULYSyQp3O8sfs2AyUA8MnYinUJTeMv7b8bCA&s=10" alt="Processador 2">
+
+                <p>AMD Ryzen 5 4500</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+   
+    <div class="grupo">
+
+        <h2>Placas-mãe</h2>
+
+        <div class="opcoes">
+
+            <div class="peca"
+                 id="placa1"
+                 onclick="selecionarPlaca(1)">
+
+                <img src="https://lojaibyte.vteximg.com.br/arquivos/ids/185612-1200-1200/placa-mae-asrock-h81m-hg4-r4-0-lga-1150-com-vga-e-hdmi-40292-1-min.jpg?v=637237070239000000" alt="Placa-mãe 1">
+
+                <p>AsRock LGA 1150 Ibyte</p>
+
+            </div>
+
+
+            <div class="peca"
+                 id="placa2"
+                 onclick="selecionarPlaca(2)">
+
+                <img src="https://images2.kabum.com.br/produtos/fotos/100672/placa-mae-asrock-b450m-steel-legend-amd-am4-matx-ddr4-90-mxb9y0-a0uayz_placa-mae-asrock-b450m-steel-legend-amd-am4-matx-ddr4-90-mxb9y0-a0uayz_1552586913_gg.jpg" alt="Placa-mãe 2">
+
+                <p>AM4 ASRock B450M Steel Legend</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    
+    <button onclick="verificar()">
+        Verificar compatibilidade
+    </button>
+
+
+    <p id="resultado"></p>
+
+
+
+    <script>
+
+        let processadorEscolhido = null;
+        let placaEscolhida = null;
+
+
+        function selecionarProcessador(numero) {
+
+            processadorEscolhido = numero;
+
+            document.getElementById("processador1")
+                .classList.remove("selecionada");
+
+            document.getElementById("processador2")
+                .classList.remove("selecionada");
+
+
+            document.getElementById("processador" + numero)
+                .classList.add("selecionada");
+        }
+
+
+
+        function selecionarPlaca(numero) {
+
+            placaEscolhida = numero;
+
+            document.getElementById("placa1")
+                .classList.remove("selecionada");
+
+            document.getElementById("placa2")
+                .classList.remove("selecionada");
+
+
+            document.getElementById("placa" + numero)
+                .classList.add("selecionada");
+        }
+
+
+
+        function verificar() {
+
+            let resultado = document.getElementById("resultado");
+
+
+            if (processadorEscolhido == null ||
+                placaEscolhida == null) {
+
+                resultado.innerHTML =
+                    "Escolha um processador e uma placa-mãe.";
+
+                return;
+            }
+
+
+            if (processadorEscolhido == 1 &&
+                placaEscolhida == 1) {
+
+                resultado.innerHTML = "Compatível!";
+
+            }
+
+            else if (processadorEscolhido == 2 &&
+                     placaEscolhida == 2) {
+
+                resultado.innerHTML = "Compatível!";
+
+            }
+
+            else {
+
+                resultado.innerHTML = "Incompatível!";
+
+            }
+
+        }
+
+    </script>
+
+</body>
+
+</html>
