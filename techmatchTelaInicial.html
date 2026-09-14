@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TechMatch - Monte seu PC</title>
+    <link rel="icon" type="image/png" href="techmatch_robozinho.png">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #f5f5f5;
+            color: #081129;
+        }
+
+        header {
+            background: #081129;
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        header img {
+            width: 55px;
+            height: 55px;
+            object-fit: contain;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        header span {
+            color: #62bff0;
+        }
+
+        .principal {
+            width: 90%;
+            max-width: 1000px;
+            margin: 30px auto;
+            text-align: center;
+        }
+
+        .principal h2 {
+            color: #081129;
+            font-size: 30px;
+        }
+
+        .principal > p {
+            color: #667085;
+        }
+
+        .grupo {
+            margin-top: 35px;
+        }
+
+        .grupo h2 {
+            font-size: 22px;
+            text-align: left;
+            border-left: 5px solid #6c50fb;
+            padding-left: 10px;
+        }
+
+        .opcoes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .peca {
+            background: white;
+            width: auto;
+            min-height: 250px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .peca:hover {
+            border-color: #62bff0;
+            transform: translateY(-3px);
+        }
+
+        .peca.selecionada {
+            border: 3px solid #6c50fb;
+            background: #f1efff;
+        }
+
+        .peca img {
+            width: 100%;
+            height: 130px;
+            object-fit: contain;
+        }
+
+        .nome {
+            font-weight: bold;
+        }
+
+        .preco {
+            color: #fd7d01;
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        button {
+            margin-top: 30px;
+            padding: 13px 25px;
+            background: #6c50fb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #d620ff;
+        }
+
+        #resultado {
+            margin-top: 25px;
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        #total {
+            color: #6c50fb;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .rodape {
+            margin-top: 40px;
+            padding: 20px;
+            background: #081129;
+            color: white;
+        }
+
+        @media (max-width: 650px) {
+            .opcoes {
+                grid-template-columns: 1fr;
+            }
+
+            .peca {
+                width: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <img src="techmatch_robozinho.png" alt="Robô TechMatch">
+        <h1>Tech<span>Match</span></h1>
+    </header>
+
+    <div class="principal">
+        <h2>Monte seu PC</h2>
+        <p>Escolha as peças e veja se elas são compatíveis.</p>
+        <p style="font-size:14px;color:#667085;">As 7 primeiras categorias são obrigatórias. Os periféricos são opcionais.</p>
+        <div id="catalogo"></div>
+        <button onclick="verificar()">Verificar compatibilidade</button>
+        <div id="resultado" style="margin-top:25px;"></div>
+        <p id="total">Total: R$ 0,00</p>
+    </div>
+
+    <div class="rodape">
+        TechMatch - Busque. Compare. Dê Match.
+    </div>
+    <script>
+const catalogo = {"processador": [{"nome": "Intel Core i5-4570", "socket": "LGA1150", "preco": 84, "tdp": 65}, {"nome": "Intel Core i7-4790", "socket": "LGA1150", "preco": 120, "tdp": 84}, {"nome": "Intel Core i5-10400F", "socket": "LGA1200", "preco": 360, "tdp": 65}, {"nome": "Intel Core i7-10700F", "socket": "LGA1200", "preco": 650, "tdp": 65}, {"nome": "Intel Core i3-12100F", "socket": "LGA1700", "preco": 480, "tdp": 58}, {"nome": "Intel Core i5-12400F", "socket": "LGA1700", "preco": 700, "tdp": 65}, {"nome": "Intel Core i5-13400F", "socket": "LGA1700", "preco": 1050, "tdp": 148}, {"nome": "Intel Core i5-14400F", "socket": "LGA1700", "preco": 1150, "tdp": 148}, {"nome": "AMD Ryzen 5 3600", "socket": "AM4", "preco": 390, "tdp": 65}, {"nome": "AMD Ryzen 5 4500", "socket": "AM4", "preco": 350, "tdp": 65}, {"nome": "AMD Ryzen 5 5500", "socket": "AM4", "preco": 480, "tdp": 65}, {"nome": "AMD Ryzen 5 5600", "socket": "AM4", "preco": 650, "tdp": 65}, {"nome": "AMD Ryzen 7 5700X", "socket": "AM4", "preco": 900, "tdp": 65}, {"nome": "AMD Ryzen 7 5700X3D", "socket": "AM4", "preco": 1200, "tdp": 105}, {"nome": "AMD Ryzen 5 7600", "socket": "AM5", "preco": 1100, "tdp": 65}, {"nome": "AMD Ryzen 7 7700", "socket": "AM5", "preco": 1600, "tdp": 65}, {"nome": "AMD Ryzen 5 8400F", "socket": "AM5", "preco": 850, "tdp": 65}, {"nome": "AMD Ryzen 5 8600G", "socket": "AM5", "preco": 1200, "tdp": 65}, {"nome": "Intel Core i5-12400", "socket": "LGA1700", "preco": 780, "tdp": 117}, {"nome": "Intel Core i7-12700F", "socket": "LGA1700", "preco": 1050, "tdp": 180}], "placaMae": [{"nome": "ASRock H81M-HG4", "socket": "LGA1150", "ram": "DDR3", "formato": "M-ATX", "nvme": false, "slots": 4, "preco": 250}, {"nome": "Gigabyte GA-H81M-S1", "socket": "LGA1150", "ram": "DDR3", "formato": "M-ATX", "nvme": false, "slots": 4, "preco": 230}, {"nome": "ASUS H81M-A", "socket": "LGA1150", "ram": "DDR3", "formato": "M-ATX", "nvme": false, "slots": 4, "preco": 260}, {"nome": "MSI H81M-E33", "socket": "LGA1150", "ram": "DDR3", "formato": "M-ATX", "nvme": false, "slots": 4, "preco": 250}, {"nome": "ASUS PRIME H410M-E", "socket": "LGA1200", "ram": "DDR4", "formato": "M-ATX", "nvme": false, "slots": 6, "preco": 420}, {"nome": "Gigabyte H410M H V3", "socket": "LGA1200", "ram": "DDR4", "formato": "M-ATX", "nvme": false, "slots": 6, "preco": 390}, {"nome": "MSI MAG B560M Mortar", "socket": "LGA1200", "ram": "DDR4", "formato": "M-ATX", "nvme": true, "slots": 6, "preco": 650}, {"nome": "ASUS TUF Gaming B560M-PLUS", "socket": "LGA1200", "ram": "DDR4", "formato": "M-ATX", "nvme": true, "slots": 6, "preco": 700}, {"nome": "ASUS PRIME H610M-A", "socket": "LGA1700", "ram": "DDR5", "formato": "M-ATX", "nvme": true, "slots": 4, "preco": 650}, {"nome": "MSI PRO H610M-G", "socket": "LGA1700", "ram": "DDR4", "formato": "M-ATX", "nvme": false, "slots": 4, "preco": 550}, {"nome": "Gigabyte B660M DS3H AX DDR4", "socket": "LGA1700", "ram": "DDR4", "formato": "M-ATX", "nvme": true, "slots": 4, "preco": 750}, {"nome": "ASUS TUF Gaming B660M-PLUS WIFI D4", "socket": "LGA1700", "ram": "DDR4", "formato": "M-ATX", "nvme": true, "slots": 4, "preco": 900}, {"nome": "MSI PRO B760M-A WIFI DDR5", "socket": "LGA1700", "ram": "DDR5", "formato": "M-ATX", "nvme": true, "slots": 4, "preco": 950}, {"nome": "Gigabyte B760M AORUS Elite AX DDR5", "socket": "LGA1700", "ram": "DDR5", "formato": "M-ATX", "nvme": true, "slots": 4, "preco": 1100}, {"nome": "ASRock B450M Steel Legend", "socket": "AM4", "ram": "DDR4", "formato": "M-ATX", "nvme": true, "slots": 4, "preco": 700}, {"nome": "MSI B450M PRO-VDH MAX", "socket": "AM4", "ram": "DDR4", "formato": "M-ATX", "nvme": true, "slots": 4, "preco": 500}, {"nome": "ASUS TUF Gaming B550M-PLUS", "socket": "AM4", "ram": "DDR4", "formato": "M-ATX", "nvme": true, "slots": 4, "preco": 850}, {"nome": "MSI MAG B550 Tomahawk", "socket": "AM4", "ram": "DDR4", "formato": "ATX", "nvme": true, "slots": 4, "preco": 950}, {"nome": "ASUS PRIME B650M-A WIFI", "socket": "AM5", "ram": "DDR5", "formato": "M-ATX", "nvme": true, "slots": 4, "preco": 1000}, {"nome": "MSI PRO B650-S WIFI", "socket": "AM5", "ram": "DDR5", "formato": "ATX", "nvme": true, "slots": 4, "preco": 1150}], "ram": [{"nome": "Kingston ValueRAM 8GB DDR3 1600MHz", "tipo": "DDR3", "capacidade": 8, "frequencia": 1600, "preco": 120}, {"nome": "Kingston Fury 16GB (2x8) DDR3 1600MHz", "tipo": "DDR3", "capacidade": 16, "frequencia": 1600, "preco": 210}, {"nome": "HyperX Fury 8GB DDR3 1866MHz", "tipo": "DDR3", "capacidade": 8, "frequencia": 1866, "preco": 130}, {"nome": "Corsair Vengeance 16GB (2x8) DDR3 1600MHz", "tipo": "DDR3", "capacidade": 16, "frequencia": 1600, "preco": 240}, {"nome": "Kingston Fury Beast 8GB DDR4 3200MHz", "tipo": "DDR4", "capacidade": 8, "frequencia": 3200, "preco": 150}, {"nome": "Kingston Fury Beast 16GB DDR4 3200MHz", "tipo": "DDR4", "capacidade": 16, "frequencia": 3200, "preco": 250}, {"nome": "Kingston Fury Beast 32GB (2x16) DDR4 3200MHz", "tipo": "DDR4", "capacidade": 32, "frequencia": 3200, "preco": 470}, {"nome": "Corsair Vengeance LPX 16GB DDR4 3200MHz", "tipo": "DDR4", "capacidade": 16, "frequencia": 3200, "preco": 270}, {"nome": "Corsair Vengeance LPX 32GB (2x16) DDR4 3200MHz", "tipo": "DDR4", "capacidade": 32, "frequencia": 3200, "preco": 520}, {"nome": "XPG GAMMIX D10 8GB DDR4 3200MHz", "tipo": "DDR4", "capacidade": 8, "frequencia": 3200, "preco": 145}, {"nome": "XPG Gammix D35 16GB DDR4 3200MHz", "tipo": "DDR4", "capacidade": 16, "frequencia": 3200, "preco": 250}, {"nome": "TeamGroup T-Force Vulcan 16GB DDR4 3200MHz", "tipo": "DDR4", "capacidade": 16, "frequencia": 3200, "preco": 260}, {"nome": "Kingston Fury Beast 16GB DDR5 5200MHz", "tipo": "DDR5", "capacidade": 16, "frequencia": 5200, "preco": 360}, {"nome": "Kingston Fury Beast 32GB (2x16) DDR5 5600MHz", "tipo": "DDR5", "capacidade": 32, "frequencia": 5600, "preco": 580}, {"nome": "Corsair Vengeance 16GB DDR5 5200MHz", "tipo": "DDR5", "capacidade": 16, "frequencia": 5200, "preco": 390}, {"nome": "Corsair Vengeance 32GB (2x16) DDR5 6000MHz", "tipo": "DDR5", "capacidade": 32, "frequencia": 6000, "preco": 650}, {"nome": "XPG Lancer 16GB DDR5 5200MHz", "tipo": "DDR5", "capacidade": 16, "frequencia": 5200, "preco": 370}, {"nome": "XPG Lancer 32GB (2x16) DDR5 6000MHz", "tipo": "DDR5", "capacidade": 32, "frequencia": 6000, "preco": 620}, {"nome": "TeamGroup T-Force Delta RGB 32GB DDR5 6000MHz", "tipo": "DDR5", "capacidade": 32, "frequencia": 6000, "preco": 690}, {"nome": "G.Skill Ripjaws S5 32GB (2x16) DDR5 6000MHz", "tipo": "DDR5", "capacidade": 32, "frequencia": 6000, "preco": 720}], "armazenamento": [{"nome": "Kingston A400 480GB SSD", "interface": "SATA", "capacidade": 480, "velocidade": 500, "preco": 220}, {"nome": "Kingston A400 960GB SSD", "interface": "SATA", "capacidade": 960, "velocidade": 500, "preco": 330}, {"nome": "Crucial BX500 480GB SSD", "interface": "SATA", "capacidade": 480, "velocidade": 540, "preco": 230}, {"nome": "Crucial BX500 1TB SSD", "interface": "SATA", "capacidade": 1000, "velocidade": 540, "preco": 360}, {"nome": "WD Green 480GB SSD", "interface": "SATA", "capacidade": 480, "velocidade": 545, "preco": 235}, {"nome": "WD Blue 1TB SATA SSD", "interface": "SATA", "capacidade": 1000, "velocidade": 560, "preco": 410}, {"nome": "Samsung 870 EVO 500GB", "interface": "SATA", "capacidade": 500, "velocidade": 550, "preco": 390}, {"nome": "Samsung 870 EVO 1TB", "interface": "SATA", "capacidade": 1000, "velocidade": 560, "preco": 580}, {"nome": "Kingston NV2 500GB", "interface": "NVMe", "capacidade": 500, "velocidade": 3500, "preco": 270}, {"nome": "Kingston NV2 1TB", "interface": "NVMe", "capacidade": 1000, "velocidade": 3500, "preco": 430}, {"nome": "WD Blue SN580 500GB", "interface": "NVMe", "capacidade": 500, "velocidade": 4000, "preco": 320}, {"nome": "WD Blue SN580 1TB", "interface": "NVMe", "capacidade": 1000, "velocidade": 4150, "preco": 500}, {"nome": "WD Black SN770 1TB", "interface": "NVMe", "capacidade": 1000, "velocidade": 5150, "preco": 620}, {"nome": "WD Black SN850X 1TB", "interface": "NVMe", "capacidade": 1000, "velocidade": 7300, "preco": 780}, {"nome": "Samsung 990 EVO 1TB", "interface": "NVMe", "capacidade": 1000, "velocidade": 5000, "preco": 690}, {"nome": "Samsung 990 PRO 1TB", "interface": "NVMe", "capacidade": 1000, "velocidade": 7450, "preco": 820}, {"nome": "Crucial P3 Plus 1TB", "interface": "NVMe", "capacidade": 1000, "velocidade": 5000, "preco": 500}, {"nome": "Crucial P5 Plus 1TB", "interface": "NVMe", "capacidade": 1000, "velocidade": 6600, "preco": 650}, {"nome": "Seagate Barracuda 1TB HDD", "interface": "SATA", "capacidade": 1000, "velocidade": 210, "preco": 300}, {"nome": "Seagate Barracuda 2TB HDD", "interface": "SATA", "capacidade": 2000, "velocidade": 210, "preco": 390}], "gpu": [{"nome": "NVIDIA GTX 1650 4GB", "consumo": 75, "preco": 600}, {"nome": "NVIDIA GTX 1660 Super 6GB", "consumo": 125, "preco": 700}, {"nome": "NVIDIA RTX 2060 6GB", "consumo": 160, "preco": 900}, {"nome": "NVIDIA RTX 3060 12GB", "consumo": 170, "preco": 1100}, {"nome": "NVIDIA RTX 3060 Ti 8GB", "consumo": 200, "preco": 1350}, {"nome": "NVIDIA RTX 4060 8GB", "consumo": 115, "preco": 1800}, {"nome": "NVIDIA RTX 4060 Ti 8GB", "consumo": 160, "preco": 2200}, {"nome": "NVIDIA RTX 4060 Ti 16GB", "consumo": 165, "preco": 2700}, {"nome": "NVIDIA RTX 4070 12GB", "consumo": 200, "preco": 3300}, {"nome": "NVIDIA RTX 4070 SUPER 12GB", "consumo": 220, "preco": 3900}, {"nome": "NVIDIA RTX 4070 Ti SUPER 16GB", "consumo": 285, "preco": 5000}, {"nome": "NVIDIA RTX 4080 SUPER 16GB", "consumo": 320, "preco": 6500}, {"nome": "AMD Radeon RX 6600 8GB", "consumo": 132, "preco": 900}, {"nome": "AMD Radeon RX 6650 XT 8GB", "consumo": 176, "preco": 1050}, {"nome": "AMD Radeon RX 7600 8GB", "consumo": 165, "preco": 1700}, {"nome": "AMD Radeon RX 7600 XT 16GB", "consumo": 190, "preco": 2100}, {"nome": "AMD Radeon RX 7700 XT 12GB", "consumo": 245, "preco": 3000}, {"nome": "AMD Radeon RX 7800 XT 16GB", "consumo": 263, "preco": 3500}, {"nome": "AMD Radeon RX 7900 GRE 16GB", "consumo": 260, "preco": 4200}, {"nome": "AMD Radeon RX 7900 XTX 24GB", "consumo": 355, "preco": 6500}], "fonte": [{"nome": "MSI MAG A550BN 550W", "potencia": 550, "preco": 300}, {"nome": "MSI MAG A650BN 650W", "potencia": 650, "preco": 350}, {"nome": "MSI MAG A750BN 750W", "potencia": 750, "preco": 430}, {"nome": "MSI MAG A850GL 850W", "potencia": 850, "preco": 700}, {"nome": "Corsair CV550 550W", "potencia": 550, "preco": 320}, {"nome": "Corsair CV650 650W", "potencia": 650, "preco": 380}, {"nome": "Corsair CX650 650W", "potencia": 650, "preco": 450}, {"nome": "Corsair CX750 750W", "potencia": 750, "preco": 520}, {"nome": "Corsair RM750e 750W", "potencia": 750, "preco": 750}, {"nome": "Corsair RM850e 850W", "potencia": 850, "preco": 850}, {"nome": "Cooler Master MWE 550 Bronze V2", "potencia": 550, "preco": 350}, {"nome": "Cooler Master MWE 650 Bronze V2", "potencia": 650, "preco": 420}, {"nome": "Cooler Master MWE 750 Bronze V2", "potencia": 750, "preco": 500}, {"nome": "Cooler Master GX III 850W Gold", "potencia": 850, "preco": 800}, {"nome": "XPG Pylon 550W", "potencia": 550, "preco": 330}, {"nome": "XPG Core Reactor 650W", "potencia": 650, "preco": 600}, {"nome": "XPG Core Reactor II 750W", "potencia": 750, "preco": 650}, {"nome": "be quiet! System Power 10 650W", "potencia": 650, "preco": 430}, {"nome": "be quiet! Pure Power 12 M 750W", "potencia": 750, "preco": 720}, {"nome": "Seasonic Focus GX-850", "potencia": 850, "preco": 850}], "gabinete": [{"nome": "Rise Mode Galaxy Full Glass", "suporta": "ATX/M-ATX/ITX", "gpu": 400, "cooler": 300, "preco": 600}, {"nome": "Rise Mode Z3 Glass", "suporta": "ATX/M-ATX", "gpu": 400, "cooler": 300, "preco": 430}, {"nome": "Rise Mode Glass 06X", "suporta": "ATX/M-ATX/ITX", "gpu": 400, "cooler": 300, "preco": 250}, {"nome": "Rise Mode Glass 03", "suporta": "ATX/M-ATX/ITX", "gpu": 355, "cooler": 300, "preco": 300}, {"nome": "Rise Mode Wave Black", "suporta": "ATX/M-ATX/ITX", "gpu": 320, "cooler": 157, "preco": 320}, {"nome": "Rise Mode Wave White", "suporta": "ATX/M-ATX/ITX", "gpu": 320, "cooler": 157, "preco": 330}, {"nome": "NZXT H5 Flow", "suporta": "ATX/M-ATX/Mini-ITX", "gpu": 365, "cooler": 165, "preco": 650}, {"nome": "NZXT H6 Flow", "suporta": "ATX/M-ATX/Mini-ITX", "gpu": 365, "cooler": 163, "preco": 850}, {"nome": "Corsair 4000D Airflow", "suporta": "ATX/M-ATX/Mini-ITX", "gpu": 360, "cooler": 170, "preco": 650}, {"nome": "Corsair 3000D Airflow", "suporta": "ATX/M-ATX/Mini-ITX", "gpu": 360, "cooler": 170, "preco": 550}, {"nome": "Cooler Master TD500 Mesh V2", "suporta": "ATX/M-ATX/Mini-ITX", "gpu": 410, "cooler": 165, "preco": 750}, {"nome": "Cooler Master MasterBox Q300L", "suporta": "M-ATX/Mini-ITX", "gpu": 360, "cooler": 157, "preco": 450}, {"nome": "Montech Air 100 ARGB", "suporta": "M-ATX/Mini-ITX", "gpu": 330, "cooler": 161, "preco": 450}, {"nome": "Montech Air 903 Max", "suporta": "ATX/M-ATX/Mini-ITX", "gpu": 400, "cooler": 180, "preco": 550}, {"nome": "Lian Li Lancool 216", "suporta": "ATX/M-ATX/Mini-ITX", "gpu": 392, "cooler": 180, "preco": 850}, {"nome": "Lian Li Lancool III", "suporta": "ATX/M-ATX/Mini-ITX", "gpu": 435, "cooler": 187, "preco": 1100}, {"nome": "Galax Revolution 05", "suporta": "ATX/M-ATX/ITX", "gpu": 360, "cooler": 160, "preco": 520}, {"nome": "Pichau Kazan 2", "suporta": "ATX/M-ATX/ITX", "gpu": 320, "cooler": 160, "preco": 480}, {"nome": "Pichau Apus", "suporta": "ATX/M-ATX/ITX", "gpu": 315, "cooler": 160, "preco": 450}, {"nome": "Aerocool Trinity Mini", "suporta": "M-ATX/Mini-ITX", "gpu": 300, "cooler": 148, "preco": 400}], "mouse": [{"nome": "Logitech G203 Lightsync", "preco": 140}, {"nome": "Logitech G305 Lightspeed", "preco": 260}, {"nome": "Logitech G502 Hero", "preco": 330}, {"nome": "Logitech G502 X", "preco": 550}, {"nome": "Razer DeathAdder Essential", "preco": 180}, {"nome": "Razer DeathAdder V2", "preco": 300}, {"nome": "Razer Basilisk V3", "preco": 360}, {"nome": "Razer Viper Mini", "preco": 240}, {"nome": "Redragon Cobra M711", "preco": 130}, {"nome": "Redragon King Cobra M711-FPS", "preco": 190}, {"nome": "Redragon Griffin M607", "preco": 100}, {"nome": "HyperX Pulsefire Haste", "preco": 250}, {"nome": "HyperX Pulsefire Haste 2", "preco": 320}, {"nome": "Corsair Harpoon RGB Pro", "preco": 180}, {"nome": "Corsair Katar Pro", "preco": 170}, {"nome": "Fortrek Crusader", "preco": 80}, {"nome": "Cooler Master MM710", "preco": 220}, {"nome": "Glorious Model O", "preco": 300}, {"nome": "AOC GM500", "preco": 150}, {"nome": "Dell MS116", "preco": 60}], "teclado": [{"nome": "Redragon Kumara K552", "preco": 220}, {"nome": "Redragon Mitra K551", "preco": 300}, {"nome": "Redragon Fizz K617", "preco": 180}, {"nome": "Logitech G213", "preco": 280}, {"nome": "Logitech G413", "preco": 450}, {"nome": "Logitech K120", "preco": 90}, {"nome": "Logitech G915", "preco": 900}, {"nome": "HyperX Alloy Origins", "preco": 500}, {"nome": "HyperX Alloy Core RGB", "preco": 250}, {"nome": "Razer Cynosa Lite", "preco": 220}, {"nome": "Razer BlackWidow V3", "preco": 650}, {"nome": "Razer Huntsman Mini", "preco": 600}, {"nome": "Corsair K55 RGB Pro", "preco": 300}, {"nome": "Corsair K60 Pro TKL", "preco": 500}, {"nome": "Corsair K70 RGB", "preco": 800}, {"nome": "Fortrek Black Hawk", "preco": 140}, {"nome": "Cooler Master CK552", "preco": 380}, {"nome": "AOC GK500", "preco": 250}, {"nome": "Multilaser Warrior TC196", "preco": 160}, {"nome": "Dell KB216", "preco": 90}], "som": [{"nome": "Creative Pebble 2.0", "preco": 150}, {"nome": "Creative Pebble V3", "preco": 260}, {"nome": "Edifier R19U", "preco": 180}, {"nome": "Edifier R1000T4", "preco": 500}, {"nome": "Logitech Z120", "preco": 140}, {"nome": "Logitech Z150", "preco": 170}, {"nome": "Logitech Z200", "preco": 260}, {"nome": "Logitech Z207", "preco": 300}, {"nome": "Trust Arys", "preco": 220}, {"nome": "Redragon GS520", "preco": 230}, {"nome": "Redragon GS560", "preco": 350}, {"nome": "Redragon GS550", "preco": 250}, {"nome": "Fortrek Black Eagle", "preco": 130}, {"nome": "Fortrek Gamer RGB", "preco": 180}, {"nome": "Multilaser SP172", "preco": 100}, {"nome": "Logitech Z213", "preco": 190}, {"nome": "Knup KP-RO801", "preco": 100}, {"nome": "C3Tech SP-301", "preco": 120}, {"nome": "OEX SK401", "preco": 140}, {"nome": "Edifier M1360", "preco": 280}], "headset": [{"nome": "HyperX Cloud Stinger 2", "preco": 300}, {"nome": "HyperX Cloud II", "preco": 450}, {"nome": "HyperX Cloud III", "preco": 600}, {"nome": "Logitech G435", "preco": 500}, {"nome": "Logitech G432", "preco": 350}, {"nome": "Logitech G733", "preco": 800}, {"nome": "Razer Kraken X Lite", "preco": 250}, {"nome": "Razer BlackShark V2 X", "preco": 300}, {"nome": "Razer Barracuda X", "preco": 550}, {"nome": "Redragon Zeus 2", "preco": 280}, {"nome": "Redragon Zeus Pro", "preco": 450}, {"nome": "Redragon Lamia 2", "preco": 250}, {"nome": "Corsair HS55", "preco": 320}, {"nome": "Corsair HS65", "preco": 450}, {"nome": "Corsair HS80 RGB USB", "preco": 600}, {"nome": "JBL Quantum 100", "preco": 180}, {"nome": "JBL Quantum 200", "preco": 250}, {"nome": "Fortrek H2 Gamer", "preco": 140}, {"nome": "AOC GH300", "preco": 280}, {"nome": "Havit H2002D", "preco": 220}]};
+const imagens = {
+    "processador": "https://images.kabum.com.br/produtos/fotos/333154/processador-amd-ryzen-5-4500-cache-11mb-3-6ghz-4-1ghz-max-turbo-am4-sem-video-100-100000644box_1652381901_gg.jpg",
+    "placaMae": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80",
+    "ram": "https://images.unsplash.com/photo-1562976540-1502c2145186?auto=format&fit=crop&w=500&q=80",
+    "armazenamento": "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?auto=format&fit=crop&w=500&q=80",
+    "gpu": "https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=500&q=80",
+    "fonte": "https://images.unsplash.com/photo-1624705002806-5d72df19c3ad?auto=format&fit=crop&w=500&q=80",
+    "gabinete": "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=500&q=80",
+    "mouse": "https://images.unsplash.com/photo-1527814050087-3793815479db?auto=format&fit=crop&w=500&q=80",
+    "teclado": "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=500&q=80",
+    "som": "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=500&q=80",
+    "headset": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80"
+};
+
+const imagensProdutos = {
+    "Intel Core i5-4570": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5tMKH-nvjmjIkB8k_H6StdHgnCC3HjwtHO6gW3_1dmA&s=10",
+    "Intel Core i7-4790": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4n2-68qP4hiCMtJ5o--YtdcWPHONyQHlrMVFrektgaA&s=10",
+    "Intel Core i5-10400F": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1PvIkrppst2eDgpD34KlUR3DEWYMsU9e7rW9fJavJqw&s",
+    "Intel Core i7-10700F": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiO7va8NPZoG28A2Oe7kMI_k-7yjitoRgv1ge5KFobNQ&s=10",
+    "Intel Core i3-12100F": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQW5MdMH5V46Sza8yFPAXX6MoHZfY1u3WuDfse-uJGhXg&s=10",
+    "Intel Core i5-12400F": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSddPAy7KT48RmDuRQOTC1vp82mSh62IrXR5PqtA9WM-A&s=10",
+    "Intel Core i5-13400F": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRe4bvGapAL5ji9iRbTTFnkPfteCn8H5IIViOTE7_7Hlg&s=10",
+    "Intel Core i5-14400F": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8k7l4IFXxBLQOM3bRaLBExaqn5Vp1QQnaqBMChCjChw&s=10",
+    "AMD Ryzen 5 3600": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3Nf4Ps_FWvOlHnTmKyyiv0so0ML_KKP0QNB94slOCHw&s=10",
+    "AMD Ryzen 5 4500": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1cF-lnhQmq1HqUTvsOhFx4MnQsbc-nSibTbMv_91IFQ&s=10",
+    "AMD Ryzen 5 5500": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmD5HOFMETwiTo9hUpnuZDGqjhTm0DPG18evcL03Ie-g&s=10",
+    "AMD Ryzen 5 5600": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJPnj1jSFSa3FyEv_tIduw2uxPoGxE2ybu2UnzIUCt-A&s=10",
+    "AMD Ryzen 7 5700X": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMFCdDRy4bQsD8wQ31rqw4kmqQISAwwHpCp1v5LmSysg&s=10",
+    "AMD Ryzen 7 5700X3D": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-T_q4vepUQnQrsvqwrduriLS5wcJUWSkXKIrmTSJiYw&s=10",
+    "AMD Ryzen 5 7600": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYMjz4UzkeeM_0lE6E1EUo0VfpGMemXLXOEbm_9xPQBA&s=10",
+    "AMD Ryzen 7 7700": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_lqwyFsvzQezHb9L02A_Z08nLJsr_KkxMgwB-2UB_sA&s=10",
+    "AMD Ryzen 5 8400F": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQHH7tpfjxoUTKo6zWSijIwwE7m3ZYmV3Pyw5RAXQBcQ&s=10",
+    "AMD Ryzen 5 8600G": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRmNcxNCw9SwNcslWeu7lFPT5evqP7YZhhtYvqCCiMGw&s=10",
+    "Intel Core i5-12400": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyHQd6PJKQgXYz8wI2xW4LtlYHqqdvCEaTy2WVweh9jQ&s=10",
+    "Intel Core i7-12700F": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0rBmPLVgLlKa9rre7Cx6bmsaPyE4qFq8_P4AewtDyrw&s=10",
+
+    "ASRock H81M-HG4": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR83U6NaM-trnGOx542fZCcne2sW5ofBulKF9xin9nNXg&s=10",
+    "Gigabyte GA-H81M-S1": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsyle9ehn8_xDRM_xhd7HDS7VAtAu2UFGYZcrd8uC5MA&s=10",
+    "ASUS H81M-A": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjoYS1LyXztqcVknm3dtefe_8cZBoVK0Sks3X8tSKP9w&s=10",
+    "MSI H81M-E33": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQa6xCicHwQGYq5-oZAJOBK4U5r3UhQTwqc3RhhacQoVA&s=10",
+    "ASUS PRIME H410M-E": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBoybKZfQZknPbPN_NV8lKXDSjmHvS6uRzYDr2DtcxMg&s",
+    "Gigabyte H410M H V3": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRiYAuWDkBfQl6VW2CmEINha5bh-xoehQFyP68Ew4WNQ&s=10",
+    "MSI MAG B560M Mortar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReYnU1pzaFmPsPeqpGofjAen3dF54rTyxutncZdcZySg&s=10",
+    "ASUS TUF Gaming B560M-PLUS": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpVI9GpYMbcblRmLrecyJRT49abHJ3U3TiP_M687RQ1Q&s=10",
+    "ASUS PRIME H610M-A": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGtdlTtgOcTFzUY6-w6YHD86seVpA7B4BLGEMdUHEzrA&s=10",
+    "MSI PRO H610M-G": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6t9SGZxx_vOjPPoYZhbJExGLwtHLQg332IaL_hXKbJQ&s=10",
+    "Gigabyte B660M DS3H AX DDR4": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqmjBNHdqROlbQqxV6OCg_xpmVbfV9_F8_9CUxnaiVFA&s",
+    "ASUS TUF Gaming B660M-PLUS WIFI D4": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxgVOK9hOezOHnhqpcDN93g76xx2d7ZiEQU1US-i-N6A&s=10",
+    "MSI PRO B760M-A WIFI DDR5": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSO-7JtlPHmyQvHswhpfTslc-8gW7jUwaEnBgpiVCQSUw&s=10",
+    "Gigabyte B760M AORUS Elite AX DDR5": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQW61Z5gEr_sLT1G0CEWRFXi_TyOwhKgSsItP7ROfSzRA&s=10",
+    "ASRock B450M Steel Legend": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBqx0SgsyvkQulyUKaFmbTXnVNCad-7Kpfd1lBkECizQ&s=10",
+    "MSI B450M PRO-VDH MAX": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTruCMZHLqLUKH7Qxw3v-6vrf-aI-2hFF_T59uu4gnLw&s=10",
+    "ASUS TUF Gaming B550M-PLUS": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKOCX2jTVBR5iHMk-s7G-uopmsyZ5pCRrv4wx77GuiSg&s",
+    "MSI MAG B550 Tomahawk": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFNGZhU4HeGEfSF2gwdzzt2wnx7E0VYawiqWS9LSwqlA&s=10",
+    "ASUS PRIME B650M-A WIFI": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpd46uyzy8q1H37z8FBdz6E3gX2l4yoEhtiFpSr9NRKg&s=10",
+    "MSI PRO B650-S WIFI": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0hwG2soz8mELq6_K4jR40fWBT2jQeJOZ94KVdPk7dUQ&s=10",
+
+    "Kingston ValueRAM 8GB DDR3 1600MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTv_d40t14esVSLvKQUadIxhpXa-XHslMiAX4bvTH5Jdg&s=10",
+    "Kingston Fury 16GB (2x8) DDR3 1600MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPST5Mn6xhBdsxhARUOZ2nT1pVrwvJpS1L9mCmfA-NpA&s",
+    "HyperX Fury 8GB DDR3 1866MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxry113T3lGfXotKoQ3cc4FfDe1UKXc7kevQ_E0oDw-Q&s",
+    "Corsair Vengeance 16GB (2x8) DDR3 1600MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCnqyoKrgEFNuU5zlo2RDOPO2gj1VTpKcHvAzy0zdqMw&s=10",
+    "Kingston Fury Beast 8GB DDR4 3200MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRd8z2xSMlU43PM_10XqzVsItLhSWGL7Ao-obZXKXrrgg&s=10",
+    "Kingston Fury Beast 16GB DDR4 3200MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSnI9kGXjNB0eU5A8PzlpUMKBNy4Qw6kqcYqzRf1PP2A&s=10",
+    "Kingston Fury Beast 32GB (2x16) DDR4 3200MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpLeW0Yh6pL_ecux49lyiGR8b1w6zw2WpaBbNTjrWb_g&s=10",
+    "Corsair Vengeance LPX 16GB DDR4 3200MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRT7QPCseDB7l4l-VMY8CGSH8hFl1k-kSV1Fvc4oCSrGg&s=10",
+    "Corsair Vengeance LPX 32GB (2x16) DDR4 3200MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9ha_CtWzkyc97EFX6be4-pdG4t33ksIlsVd_2OsQm0g&s",
+    "XPG GAMMIX D10 8GB DDR4 3200MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5tmy7Ca7KcHpbcVMM2NC7AId9R3fR69plQVc-D1d3EA&s=10",
+    "XPG Gammix D35 16GB DDR4 3200MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNAMV9MxqS23zT8CtyCpZWfAOxHbaJyX2OiIIo1_wYTg&s=10",
+    "TeamGroup T-Force Vulcan 16GB DDR4 3200MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0uEL-kt7LFIx6Y0E3iPm6fsXPOpS-Hep3jiXVIQyKJA&s=10",
+    "Kingston Fury Beast 16GB DDR5 5200MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1DO4IAEttnhQPfuTkTjEVAfk1JEdbtvhlQD0bqDv_Qw&s",
+    "Kingston Fury Beast 32GB (2x16) DDR5 5600MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSq87HHY921FR5L5upf-CRT-kTIarmm8K4JDWYwbgDyAQ&s=10",
+    "Corsair Vengeance 16GB DDR5 5200MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsMSWKDuXUFSxkBbNcZCw-w7dMTPzEqdNeQq0uR9q5Kg&s=10",
+    "Corsair Vengeance 32GB (2x16) DDR5 6000MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZpjA78XpMtOOiZHe1vw3hIm95QsnKuIRWZKrYebe0HA&s",
+    "XPG Lancer 16GB DDR5 5200MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuutwGKzUTOebo4YdSrq6p83oeL88-n46cbOHRn0_Tvg&s=10",
+    "XPG Lancer 32GB (2x16) DDR5 6000MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgAKdir0P8xKs9zCqDR7QJfaf2v11JgNP-p4zcEBLzpA&s=10",
+    "TeamGroup T-Force Delta RGB 32GB DDR5 6000MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoV6MGB-1ccUBPKT_oAJ30XNTOfJA9opwOQUwmWNRS6w&s",
+    "G.Skill Ripjaws S5 32GB (2x16) DDR5 6000MHz": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8zaNZG_bPO4qoBoXnbp8NE9ag2HXtIUw1v3ARsWdH_A&s",
+
+    "Kingston A400 480GB SSD": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8qH5mWzXiMjbv1KAE5RBoVU_6G8kqK3G1Uhy3M3Pb-Q&s",
+    "Kingston A400 960GB SSD": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHuPtf_NrhSmwF-1ZXzstz-KRb69iGX2WtWQEQCznCQA&s=10",
+    "Crucial BX500 480GB SSD": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5VfvenEGw4Ce18n5qFXZvJaoXrT00gbfZaCS1R4RBUw&s=10",
+    "Crucial BX500 1TB SSD": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtp3_eFiBCaOAewU1u1sXXxzSEniKtlKKF0DWMlpCD-A&s=10",
+    "WD Green 480GB SSD": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSREypO0UrnIavJ6taRc_8neLBO66B-dvlbBx-GtUaWCg&s=10",
+    "WD Blue 1TB SATA SSD": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5CYqHiEEjysfY20lEZrKIQVGuD43z83c7db-x6Z2UKw&s=10",
+    "Samsung 870 EVO 500GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQoqIuqC1W4pGFZmo0jL6o-xNZTAITxXQzjfi89xAqfXw&s=10",
+    "Samsung 870 EVO 1TB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRldI5du2FPJ_6cLcZEnoLi8XKqHHaIKOs9CHFB1luLBA&s",
+    "Kingston NV2 500GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmQ560HmEoL9aG94y8iRFKH8s1Bzz4OgUI1bHxNAUjcA&s=10",
+    "Kingston NV2 1TB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRM6Xn82xIz8f2IrdUSfOXpd2vs9YLfPoraee2bcW9_nw&s",
+    "WD Blue SN580 500GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPZ5hHyBxRSUaJuuEgCIdCtGudt33tp_9wW8iukF-OBw&s",
+    "WD Blue SN580 1TB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBB6fCile5L9HNi9XvT86FSXFN1oqiAm6lHtYVxxdX1g&s=10",
+    "WD Black SN770 1TB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1GzWqPhNVW3n9G153Ogoxg0H9IACGZUA4OD58dekbFA&s=10",
+    "WD Black SN850X 1TB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZTOSJh2uvjyqgEP6ptkHOgL4MoiIf3qKuyiVCMNMNTQ&s=10",
+    "Samsung 990 EVO 1TB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRuEAYGrCJNYeCqUBpgOqg2sttN20_ZGgJsnm1b7RgwQ&s=10",
+    "Samsung 990 PRO 1TB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXcs3uk3hQFTGQOBSVEMzpxAraDlDV3Pi73R8oSSK_Ng&s=10",
+    "Crucial P3 Plus 1TB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQp49NEWNpiUFTST2No-sKq47DqoqJNU43z6iJO4Het3A&s=10",
+    "Crucial P5 Plus 1TB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiWuD_THDZCrnBTykf5OGUYc2F33bNAor8Qe5BUrM-uA&s=10",
+    "Seagate Barracuda 1TB HDD": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7gWgq20oANDXELEmmx58A6ZINIIsZR6DKCPI67pNvGQ&s=10",
+    "Seagate Barracuda 2TB HDD": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQktPpu3Iz-2ZNd3FclW1oNaG1K-bj1SvQ9ia5XQdIrOQ&s=10",
+
+    "NVIDIA GTX 1650 4GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8XYcAf_bzwwUIJlRR_V_B-TvI5-MTuTZ2Uyp1aZgELQ&s=10",
+    "NVIDIA GTX 1660 Super 6GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvasZDJubZAZIgoKol1GOtAjWWaImJ4ld6qocNM7DvYQ&s=10",
+    "NVIDIA RTX 2060 6GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQB8UYlcgWq2Vukg1DuuWumKSG_AEtTC59fqkUKlg6eyQ&s=10",
+    "NVIDIA RTX 3060 12GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkNVu_u3cpEfBQbD2-q-eC6WpSQJ_sPUcypD4Uad4_PQ&s=10",
+    "NVIDIA RTX 3060 Ti 8GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStNKNkcBM7EaqMykmddKUmu7yAg8gWxtW5fkUJDDFLsQ&s=10",
+    "NVIDIA RTX 4060 8GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQeebhr-jjQsXJib2NNgF6WhoxIH52Z2etvJrQa-1Mbw&s=10",
+    "NVIDIA RTX 4060 Ti 8GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmo4QVTjVznwW8J6mZQ98qg38H4HZiZRuNm0gj6M2hvQ&s=10",
+    "NVIDIA RTX 4060 Ti 16GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0GN5rf86cZs_v6C_PL11iq_C4sBthB8kBUjRWtWa1pw&s=10",
+    "NVIDIA RTX 4070 12GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQN_s0FOJY5pQUecUbZRsfs94d7OkSk66vTbxBXIDqq4A&s=10",
+    "NVIDIA RTX 4070 SUPER 12GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4m5YJHRduXE8CzeieNfy6nWQdERmk1R7g0jkMybktUg&s=10",
+    "NVIDIA RTX 4070 Ti SUPER 16GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1ESkwUrSRv0cNQw7O5hmptcieHPJ5lw4J_t4R0DPmAw&s=10",
+    "NVIDIA RTX 4080 SUPER 16GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8hBBVDGJbroG8zxZ4xn6DU5Ys3JY_Z1aUxsMfdtn_1w&s=10",
+    "AMD Radeon RX 6600 8GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTI4XQepMInWt7d3rlXQawF0PPMGPXmJcAygAYqQInbQ&s=10",
+    "AMD Radeon RX 6650 XT 8GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4MScT9mcxeDMfHrlbJ0xZztRSjKD6cq4x-oooze2t8A&s=10",
+    "AMD Radeon RX 7600 8GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmugtf7HoP4IBbX5-xcfZOD2OrrXXe6G9FgD5kZwaqbw&s",
+    "AMD Radeon RX 7600 XT 16GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwoZkol__T5i_z9BkUJV-HVDm_0o8SAXBqixdSPzZxGw&s=10",
+    "AMD Radeon RX 7700 XT 12GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPO-EI2oJKdLTTSZN_yk6YpZ2EbACe98_kBB2drUcmiQ&s=10",
+    "AMD Radeon RX 7800 XT 16GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThhj-N6yySLyoPmt1OveujWBU3VeLvJbUPhvML8v6ghw&s=10",
+    "AMD Radeon RX 7900 GRE 16GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuj7W04qLxa8e6Y9eqwz5zWn9lRdpyfBPO254MUUU25w&s=10",
+    "AMD Radeon RX 7900 XTX 24GB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDK0p9niXa8vUIMptl8xucQHvq1BusVU1iczAUFOlOlA&s=10",
+
+    "MSI MAG A550BN 550W": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQM1QKzEa-gIkhJ0MAUAiooQRhym6wZVFwvgtx-KXKqgw&s=10",
+    "MSI MAG A650BN 650W": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqC3pXKjAurhCjOu7l77Y5e6cYGmuPf3B1lpfEKpWbOw&s=10",
+    "MSI MAG A750BN 750W": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAxCcf2bjddRqdGcwmZ5vucfOC7HYiCvZyvcY6dk8f6g&s",
+    "MSI MAG A850GL 850W": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRon2Me-c8mmg0H5GfNFOnqbD5Na_PRkF3WfuXrjjTjCw&s=10",
+    "Corsair CV550 550W": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvHBlEgUYuB5c0qcNhOkgxT6jfULUT-CFug2AwSZy53Q&s=10",
+    "Corsair CV650 650W": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTG-L_KQn7Xi4rl3ZieBoqdXitAE-A_pMwQaQthzfM09Q&s=10",
+    "Corsair CX650 650W": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbp562Ce6rfr61C5UoVn5LHHAgYnC9qt5uaAZ9qXVeHg&s=10",
+    "Corsair CX750 750W": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrciT3kvD-nPf2viIgdfV1GShBqIOiDriqpVld-ws5Bw&s=10",
+    "Corsair RM750e 750W": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEkkvXMNBAemCs-MpOUvfa-dlGs8aUgB4tj5JZRQKI2w&s",
+    "Corsair RM850e 850W": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDYB7ljS-LzbrH40ePoe4tqlfpVl5z-PO_C4vQB0f01Q&s=10",
+    "Cooler Master MWE 550 Bronze V2": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyNVfiGQtKKmWrLf0povjKgzfhIHQk3qo4NzOb_Avjkw&s",
+    "Cooler Master MWE 650 Bronze V2": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwgIkClVs_MwwxlpuN_pw11Ekt5ZfwYvNE-gFy-vxK3Q&s=10",
+    "Cooler Master MWE 750 Bronze V2": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ85b2n95uyIeNQxBTl0oG01hL1G0RNcM7CMJz4hd9nLA&s=10",
+    "Cooler Master GX III 850W Gold": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLIhIwIHYCVQBQ9o48iv6p3C0l1eMftTt9m6VUP0q8WA&s=10",
+    "XPG Pylon 550W": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRk9eY2f4kAjATPbHztGa7caSubCKiXsHcosmgGeEkrBA&s=10",
+    "XPG Core Reactor 650W": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRn3WXoaTj51N_bxetS6gcM_DgIjM5Y28oP5h8ZrOkUOw&s=10",
+    "XPG Core Reactor II 750W": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6LTOQsUkYhHYVgX1YJaHzQQRnNumnp8yPnDOBfKHDEg&s=10",
+    "be quiet! System Power 10 650W": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRi0Ko7c9KlIYWbMv2G2Wp8k9IAKuz0SukWBEDIWhWX-g&s",
+    "be quiet! Pure Power 12 M 750W": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ52upQSYDEiG25-H7Px314rBWuR89yiDgryeUKLlvWVw&s",
+    "Seasonic Focus GX-850": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIdR5mb0Ez6LtKoNGp6F22J3CahbtUHMWxlW_XTotEOw&s",
+
+    "Rise Mode Galaxy Full Glass": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRw2mPlRy4-y8OZxMzb7xthJYgABtbzQcdZKQEGKtheng&s=10",
+    "Rise Mode Z3 Glass": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5O8SuiRzr5W1CsqU71pahlSmFHWqW3ldgaE4LRMN9_w&s=10",
+    "Rise Mode Glass 06X": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4D8ZbGFjDS1TQprUtteICpqCzYBSgEeA8mkaNbleC_Q&s=10",
+    "Rise Mode Glass 03": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_IjHf_G0WGkiyvMCVviIKXLzPS6naPOyQ51sLdjcfRw&s=10",
+    "Rise Mode Wave Black": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkKL4xIzbzrk21GgukOqvfa7tWl1Uzm-IRqgRHWTrHKw&s=10",
+    "Rise Mode Wave White": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0vnoyzLPh7gZlO1wnNqAzOZk73eRPXTkobLhETJzhBg&s=10",
+    "NZXT H5 Flow": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB4iE8bHax2DdRCewDSXgI-bPRCt4mPV0wHIkzAyBRWQ&s=10",
+    "NZXT H6 Flow": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTi3er0YBuF963-E3PCGgVZWl_bLOQDo7PyLVnpKxIFKg&s",
+    "Corsair 4000D Airflow": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQqnD8cMx08Otjs4jLDMp154Po_Ia7T96BXCeiVfaeJQ&s=10",
+    "Corsair 3000D Airflow": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQt51jvIHaqSwSlTRhJiY4Y4OyR5QQ3H5NN7vygPI9lxg&s",
+    "Cooler Master TD500 Mesh V2": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2nirwLgfNsX3jeHUblT8TtepNDdh8aHR2WvSJWdByYA&s=10",
+    "Cooler Master MasterBox Q300L": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTo0CJ1C9OqWi9dzb3wfR67VxsdJyidbKm63gkBP1NTtQ&s=10",
+    "Montech Air 100 ARGB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuKyCaqiO5NelEbMppB9rb4Cs_HhRWFFe-DH6dxX5vFg&s",
+    "Montech Air 903 Max": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTM6oTDLK8LpMDYnRz1WuulTQuV-0pQznVhJEOpTuixEA&s=10",
+    "Lian Li Lancool 216": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8iCLygbN01VvAMSyHAlSFcUYd2N_EFFMQM6mui6HCrQ&s=10",
+    "Lian Li Lancool III": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQuZpr9gRDJ-FHBnSVXAQVK-s0rCcJKSSoZiYstkQTeA&s=10",
+    "Galax Revolution 05": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNBbK4b7coW0v6K4L1jYMR4T4j1KtPAb3erAo9I-R4rw&s=10",
+    "Pichau Kazan 2": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6eV9gvpKKtmlmqhF2840g6Mlqksv70W2WtzIbdOQOAg&s=10",
+    "Pichau Apus": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkdEzvQsYovSd00oT1HMkcDmzJnw862VQg-T-3pWdbyA&s=10",
+    "Aerocool Trinity Mini": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSW6gfygzKThacjPDgCNDEqKnq5VsWghcO0KDO-VaNoQ&s=10",
+
+    "Logitech G203 Lightsync": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxzlJR8VtsOJRmfynaB3BYOFlh1fNSNmL49-EaAVjpNw&s",
+    "Logitech G305 Lightspeed": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLhgh79kip4wCevv8jG45kK5aOCrHF6pAjU85omr3XbA&s=10",
+    "Logitech G502 Hero": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9332GPXqD5UaCiQOw4gKxFESL1Yr1U54VGs6Nq_hdUw&s=10",
+    "Logitech G502 X": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTl2HRjIA2N8wQiHaIFJDIm6VFiQEP-xfbMpZicUtgDnw&s=10",
+    "Razer DeathAdder Essential": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVeIHUZPB0MkQkU3MYF-mBx7lhwWVvDMw5yGlhVGiOCg&s",
+    "Razer DeathAdder V2": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRH7yiza9p3P2jSchRcuso4r_wGHq0-cVOBw6JrdpDP5Q&s=10",
+    "Razer Basilisk V3": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXXvZjz1rfvWsvv3NFRvWGEVlptsr-o4lvjtbrBWPgPg&s=10",
+    "Razer Viper Mini": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxSDjlx6uIAKZaluM7N3EgOcI1-mo_fXYlxfpJMCRaKQ&s=10",
+    "Redragon Cobra M711": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQY0FMlD2cGsGhKDRLJTXNfMQmIMwwqxu07sHiAaz7NYA&s=10",
+    "Redragon King Cobra M711-FPS": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7rjXZAwZJgbf2Wz6hxLSebRqcq7Ce_V-yPJ0A3j825w&s=10",
+    "Redragon Griffin M607": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcLDTYn5ANn9FhfQzmo3YB1wvBcvDTREuony8SDI0IIQ&s=10",
+    "HyperX Pulsefire Haste": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRW3WVU6virzSPC7YxSnvG_WMOchxjjDCiRVwv9tO4jUg&s=10",
+    "HyperX Pulsefire Haste 2": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFxycKtGfDHv0LoRr0X-CsPanVgvfMcGh_P5EXGTPh4g&s=10",
+    "Corsair Harpoon RGB Pro": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFO5qG40YB_i7Q37rvYas0vIjb48y_J8v670YPIhMgig&s=10",
+    "Corsair Katar Pro": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9IgKrKjnNNKOMkMGT_hPEn3hgiBmYfhGz_CLsglbRnA&s=10",
+    "Fortrek Crusader": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5DZ_RWN5MEFZJfqUN9Ynuy_Qj_C7aPX1slST1V6M90w&s",
+    "Cooler Master MM710": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS0sw4a0s3iBKfWGU4kfU7Cft0tzKGmfPUh2tQC07asA&s=10",
+    "Glorious Model O": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNJSAZ1LxudhmjOFfewm6KsTqrgJJ3go5Gll_51ErYug&s=10",
+    "AOC GM500": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT_mcXlpLT2Lr2AjooK_3dM5Y-9nizWRCYqrNXAW8glg&s=10",
+    "Dell MS116": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlvFsNWU45EUlEMElxpRve4eVLbkSpMupEmBpZgQfAeA&s=10",
+
+    "Redragon Kumara K552": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXtH2ipTj9_SgeMdbhCgJl0CkVQ7Wj3Wq9Jq43zzMOYQ&s=10",
+    "Redragon Mitra K551": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjtRhEae0D8cra-f_3lnovWacGDzu7_2wrM1LY6awgEQ&s=10",
+    "Redragon Fizz K617": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSd8fS44mYeewggtOgzMF4rjxNlNFfa4MJkZ20d1eqkEA&s=10",
+    "Logitech G213": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEQfRk6L2Gcj4XzaSCQ0sAVnqtR4-Et__mkB0xMifAbA&s=10",
+    "Logitech G413": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGUbXKe0U2UQWfrylb81iUrPxJ_V5K0am0uFN9blDpxw&s=10",
+    "Logitech K120": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXBXj3ap0dWdX465aPdKv5EpPEdaTDL-FQan5eWkL7RQ&s=10",
+    "Logitech G915": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7ZnLK6MUX0R_U5gugS_FH3X9draobUrBNZPHqN9S12w&s",
+    "HyperX Alloy Origins": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUt89TJRBeENf2k48R28ZKFIxp7NkyPmReahsAP2toGQ&s=10",
+    "HyperX Alloy Core RGB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_vks_NkSYmjnEKhwLOqJhWeOVl3blbRB3FIKwFKSjVg&s=10",
+    "Razer Cynosa Lite": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0HOd3AyeUHfxqotkMHNIliHOEFoGWN5g9Jey9xq9Rmw&s=10",
+    "Razer BlackWidow V3": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZOMtU1VV8hpulX17px9HZXPOP838L0IZREFA5u_jlvw&s=10",
+    "Razer Huntsman Mini": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmsFzeJ97ECYeZsq-yy5QOZsQ4HjaTFszT1zP6luxKHA&s=10",
+    "Corsair K55 RGB Pro": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNUSZSbUYPPgb7K-4btnowQTmht0EnXPRiUVj-KOTlHg&s",
+    "Corsair K60 Pro TKL": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVAbGNXPYA9sp_JM3Yl-NxAOsGV34vaDSH00fGoHB0RA&s",
+    "Corsair K70 RGB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8UunOIY9SIbJqZOzV9v2_Do9KvDILJTJml1Uw7LkakA&s=10",
+    "Fortrek Black Hawk": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB1asGIIdxRVSDpBBonzAWnlDlDZ4MJZZa3UGeP50LkA&s=10",
+    "Cooler Master CK552": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLIv9dom2gPQ4feZW_LgYByPaYViTo2FTNe8VJm97Fgw&s=10",
+    "AOC GK500": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbDAGoC1I0F_WiBiOQs_0D2juhu_AiI4nxRF4AAt7ntA&s=10",
+    "Multilaser Warrior TC196": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlg6a6JAP8xzubYRZpN3YICurvCklpIA-ffe3zFnsaNg&s=10",
+    "Dell KB216": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBkoP3j2_z3m85aR3zLSQ_WbXVG1D8zManmIi2dq6sMg&s=10",
+
+    "Creative Pebble 2.0": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAnQY1E-bkoAGMsyRS_OLo35QuoRr1LcG-f1606zhGGQ&s=10",
+    "Creative Pebble V3": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQq3ibTfxDidod1Axm_3UCjVujWTTU0manVHbExebOAzw&s",
+    "Edifier R19U": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSq4aN8cx8PLRCiB0nppOuWaZC9K9HjS6Fvy85dTDC-rg&s",
+    "Edifier R1000T4": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCk4cWJN3vyd-l3cdK1WmtXFdnMK-dQNFt8H4flOnhqQ&s=10",
+    "Logitech Z120": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuIS6pXMmnZzKbhGcJF8AbWQqLChxeB5ZafumqqSXrPA&s=10",
+    "Logitech Z150": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQw4lbu0v8XVFcv3cW5Cc5EGmuipIBimf3V3NrrRuoPIg&s=10",
+    "Logitech Z200": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAUpt_tiNccw9zYDSMr_LVTwM_xsflPUy1tru9lVb1cg&s",
+    "Logitech Z207": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvgDtRnaYD4g3GqxHYmROTo_OVQIkXWaxHR3nVnsZOKw&s=10",
+    "Trust Arys": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6fPdQfhO2ucveys4M34JvSsoYtWOgTApqnvRlJdjslA&s=10",
+    "Redragon GS520": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_iTRtt31CAFsmCNQQuP2-hdgnfQeyh6KGK6BSapMTQg&s=10",
+    "Redragon GS560": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL037QhjpJuSOpjcU6OePoi_EHiElXobS_HNQMoIvmGQ&s",
+    "Redragon GS550": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEiXaGpk38Lm7Th2lhudwBURqOIjH9LJlSACEr16PuDw&s=10",
+    "Fortrek Black Eagle": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-jnZ8PoJH9BFTGlegok-ojk1akJkFjRKFrYRuYuRiNw&s=10",
+    "Fortrek Gamer RGB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLY5jzJhYULxSzPq8rKoQHbpJooOYXFN_vz9JrusTvIQ&s=10",
+    "Multilaser SP172": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNzkhGD3sPCDhAp8BoeXjQIjYJ65W6YQnsjc7VCmPR_A&s=10",
+    "Logitech Z213": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQg2CaocFln5wt-fHHLxNFCqaGw7xkwlLdfAXImgSt0vg&s",
+    "Knup KP-RO801": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTROsL3NYBDg_kUHOdwJgmIUt4BVnCB2OxDUqyoJYQuFw&s=10",
+    "C3Tech SP-301": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTP6ZD_aIw7z3unnmWSS-eDZ87E0UBtXXcpCx-cgt0qxw&s=10",
+    "OEX SK401": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRE6ctbWm1PNlYeYdTsZuWFypGYszCWpkVOXcB6qsPlxQ&s",
+    "Edifier M1360": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQYzzLy-z1w60Pyix9v-mEYaT5l6Np-nu7_zKL3ep45Q&s",
+
+    "HyperX Cloud Stinger 2": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxbYMlyM3Ks4pAV-ml59Xlrh-t8A3HnvlPDSrjvvsxnQ&s=10",
+    "HyperX Cloud II": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6lYIhB_udXFhJB7mwhxY8-_cuitB_DxUs9uXCD5Afbg&s=10",
+    "HyperX Cloud III": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4mRDH9KRAStvzqL93AEEWJlfHtuHmWlGsWI49EbhshA&s=10",
+    "Logitech G435": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQABHs9jW12NvpUk4c0-K-K4R8o_ugKRCA49938Avwc3Q&s=10",
+    "Logitech G432": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZXFStHG5yPjBqG0mkmgTnKbRyEoxyuXXopYvz-LNFDg&s=10",
+    "Logitech G733": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSD3oiMlvYPmzlY3tI5GNylt2WJUNPZZcll5LElHpgc8Q&s",
+    "Razer Kraken X Lite": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMjO-p3XYrxRiE5ZTLA8WEK5o0or3e4xkjujPZOFNG6g&s=10",
+    "Razer BlackShark V2 X": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKzjplFNTK2XW3C_EWchLthSzANBaIDxyPZkB0y9oLGA&s=10",
+    "Razer Barracuda X": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpND-NS8vuSqHXamHY4vfoMv5HoTblYkmwQhdwTzapyA&s",
+    "Redragon Zeus 2": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSXqZ17BYaUIT_VbpfIe798G-W20JqwEDBuzO-qcTQbg&s=10",
+    "Redragon Zeus Pro": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReCm7tE32HEtVYxgouqqPwXpKDAf6rm01cfYk6b1LnPw&s",
+    "Redragon Lamia 2": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSsh8B1bBiLWG9A_-pF9e5AbjOe9tK2wYw7pSYczskngg&s=10",
+    "Corsair HS55": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTITSlWjwr06vprk3EitxdPpAobOUFk5mQJz6qPEK7e1w&s=10",
+    "Corsair HS65": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwXiv9nhy_Q8I69wgzTIcee7iAF2THWmnqyG7G7gfIfA&s=10",
+    "Corsair HS80 RGB USB": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBgwEaZZNHAo_fvzHK2CgDBtMMXziCiiQHaNZ2CPUKjw&s=10",
+    "JBL Quantum 100": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpz5USabnCrrKALPZiWcCUi4fvf4djnLguPHorKCw-bQ&s=10",
+    "JBL Quantum 200": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-xJ-kMFzyv8Eju1S6iCggu4SRCHxM23O32d9OgfUB0g&s=10",
+    "Fortrek H2 Gamer": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_GJiAa9TChJ6zhLCenQdXsn46vo3JIjQOQx1pcIsZQw&s=10",
+    "AOC GH300": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyVrh6QeGPaP_ENnnDVdscByn-PqIsqEX5kthqXADOpw&s=10",
+    "Havit H2002D": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTs4E_1NsWiuReNOPCp4k4vLWpiUciJ61BhqyM9X42hQ&s"
+};
+const selecionados = {};
+
+function dinheiro(v){ return v.toFixed(2).replace('.', ','); }
+
+function criarCatalogo(){
+    const div = document.getElementById('catalogo');
+    Object.entries(catalogo).forEach(([categoria, lista]) => {
+        const grupo = document.createElement('div');
+        grupo.className = 'grupo';
+        const titulo = {
+            processador:'Processadores', placaMae:'Placas-mãe', ram:'Memórias RAM', armazenamento:'Armazenamento (HD/SSD)',
+            gpu:'Placas de vídeo', fonte:'Fontes de alimentação', gabinete:'Gabinetes', mouse:'Mouse', teclado:'Teclados', som:'Caixas de som', headset:'Headsets'
+        }[categoria];
+        const obrigatorio = ['processador','placaMae','ram','armazenamento','gpu','fonte','gabinete'].includes(categoria);
+        grupo.innerHTML = `<h2>${titulo} <span style="font-size:13px;color:${obrigatorio?'#20a878':'#667085'};">(${obrigatorio?'obrigatório':'opcional'})</span></h2><div class="opcoes" id="opcoes-${categoria}"></div>`;
+        div.appendChild(grupo);
+        const opcoes = grupo.querySelector('.opcoes');
+        lista.forEach((peca, i) => {
+            const card = document.createElement('div');
+            card.className = 'peca';
+            card.dataset.categoria = categoria;
+            card.dataset.indice = i;
+            const extra = detalhes(categoria, peca);
+            const fotoProduto = imagensProdutos[peca.nome];
+            const foto = fotoProduto && !fotoProduto.includes('loremflickr.com') ? fotoProduto : (imagens[categoria] || 'placeholder.png');
+            card.innerHTML = `<img src="${foto}" alt="${peca.nome}" onerror="this.onerror=null;this.src='placeholder.png';"><p class="nome">${peca.nome}</p><p class="preco">R$ ${dinheiro(peca.preco)}</p>${extra}`;
+            card.onclick = () => selecionar(categoria, i, card);
+            opcoes.appendChild(card);
+        });
+    });
+}
+
+function detalhes(cat,p){
+    if(cat==='processador') return `<small>Socket: ${p.socket} · TDP: ${p.tdp}W</small>`;
+    if(cat==='placaMae') return `<small>Socket: ${p.socket} · ${p.ram} · ${p.formato}</small>`;
+    if(cat==='ram') return `<small>${p.tipo} · ${p.capacidade}GB · ${p.frequencia}MHz</small>`;
+    if(cat==='armazenamento') return `<small>${p.interface} · ${p.capacidade}GB · até ${p.velocidade}MB/s</small>`;
+    if(cat==='gpu') return `<small>Consumo estimado: ${p.consumo}W</small>`;
+    if(cat==='fonte') return `<small>Potência: ${p.potencia}W</small>`;
+    if(cat==='gabinete') return `<small>Placa-mãe: ${p.suporta} · GPU até ${p.gpu}mm</small>`;
+    return `<small>Periférico opcional</small>`;
+}
+
+function selecionar(cat, indice, card){
+    document.querySelectorAll(`[data-categoria="${cat}"]`).forEach(c=>c.classList.remove('selecionada'));
+    card.classList.add('selecionada');
+    selecionados[cat] = catalogo[cat][indice];
+    atualizarTotal();
+}
+
+function atualizarTotal(){
+    let total = 0;
+    Object.values(selecionados).forEach(p=> total += Number(p.preco || 0));
+    document.getElementById('total').innerHTML = 'Total: R$ ' + dinheiro(total);
+}
+
+function compatibilidade(){
+    const r=[];
+    const cpu=selecionados.processador, placa=selecionados.placaMae, ram=selecionados.ram;
+    const armazenamento=selecionados.armazenamento, gpu=selecionados.gpu, fonte=selecionados.fonte, gabinete=selecionados.gabinete;
+    if(cpu.socket===placa.socket) r.push('✓ CPU e placa-mãe: compatíveis');
+    else r.push('✕ CPU e placa-mãe: incompatíveis');
+    if(ram.tipo===placa.ram) r.push('✓ Memória RAM e placa-mãe: compatíveis');
+    else r.push('✕ Memória RAM e placa-mãe: incompatíveis');
+    if(armazenamento.interface==='SATA' || placa.nvme) r.push('✓ HD/SSD e placa-mãe: compatíveis');
+    else r.push('✕ SSD NVMe e placa-mãe: incompatíveis');
+    const wattsNecessarios = Math.ceil((cpu.tdp + gpu.consumo + 120) * 1.25);
+    if(fonte.potencia >= wattsNecessarios) r.push(`✓ Fonte: suficiente (${fonte.potencia}W · recomendado pelo TechMatch: ${wattsNecessarios}W)`);
+    else r.push(`✕ Fonte: insuficiente (${fonte.potencia}W · recomendado pelo TechMatch: ${wattsNecessarios}W)`);
+    if(gabinete.suporta.includes(placa.formato)) r.push('✓ Placa-mãe e gabinete: compatíveis');
+    else r.push('✕ Placa-mãe e gabinete: incompatíveis');
+    return r;
+}
+
+function verificar(){
+    const obrigatorios=['processador','placaMae','ram','armazenamento','gpu','fonte','gabinete'];
+    const faltando=obrigatorios.filter(c=>!selecionados[c]);
+    const resultado=document.getElementById('resultado');
+    if(faltando.length){
+        resultado.innerHTML='<b>Escolha todas as peças obrigatórias.</b><br><small>Faltando: '+faltando.map(f=>({processador:'processador',placaMae:'placa-mãe',ram:'memória RAM',armazenamento:'armazenamento',gpu:'placa de vídeo',fonte:'fonte',gabinete:'gabinete'}[f])).join(', ')+'</small>';
+        resultado.style.color='#fb3c87';
+        return;
+    }
+    const testes=compatibilidade();
+    const ok=testes.filter(x=>x.startsWith('✓')).length;
+    const total=testes.length;
+    resultado.innerHTML=`<h3>Resultado da montagem: ${ok}/${total} verificações OK</h3>` + testes.map(x=>`<p style="margin:7px 0;color:${x.startsWith('✓')?'#20a878':'#fb3c87'}">${x}</p>`).join('');
+}
+
+criarCatalogo();
+</script>
+</body>
+</html>
