@@ -30,7 +30,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
@@ -45,12 +45,14 @@ app.MapGet("/teste-banco", () =>
 
         banco.Close();
 
-        return "Conex„o com o MySQL realizada com sucesso!";
+        return "Conex√£o com o MySQL realizada com sucesso!";
     }
     catch (Exception erro)
     {
         return "Erro ao conectar: " + erro.Message;
     }
 });
+
+app.Urls.Add($"http://0.0.0.0:{Environment.GetEnvironmentVariable("PORT") ?? "10000"}");
 
 app.Run();
