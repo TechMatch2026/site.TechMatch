@@ -6,13 +6,13 @@ namespace TechMatch.backend
     {
         public MySqlConnection Conectar()
         {
-            string servidor = Environment.GetEnvironmentVariable("DB_SERVER") ?? "localhost";
-            string bancoDados = Environment.GetEnvironmentVariable("DB_NAME") ?? "techmatchbd";
-            string usuario = Environment.GetEnvironmentVariable("DB_USER") ?? "root";
-            string senha = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "";
-
             string conexao =
-                $"Server={servidor};Database={bancoDados};Uid={usuario};Pwd={senha};";
+                $"Server={Environment.GetEnvironmentVariable("DB_HOST")};" +
+                $"Port={Environment.GetEnvironmentVariable("DB_PORT")};" +
+                $"Database={Environment.GetEnvironmentVariable("DB_NAME")};" +
+                $"Uid={Environment.GetEnvironmentVariable("DB_USER")};" +
+                $"Pwd={Environment.GetEnvironmentVariable("DB_PASSWORD")};" +
+                "SslMode=Required;";
 
             MySqlConnection banco = new MySqlConnection(conexao);
 
