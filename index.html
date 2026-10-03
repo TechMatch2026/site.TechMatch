@@ -52,11 +52,39 @@
 
 
 <script>
- 
     let botao = document.getElementById("botao");
 
-    botao.addEventListener("click", function() {
-        window.location.href = "techmatchTelaInicial.html";
+    botao.addEventListener("click", async function() {
+
+        const nome = document.getElementById("nome").value;
+        const senha = document.querySelector('input[type="password"]').value;
+        const email = document.querySelector('input[type="email"]').value;
+
+        try {
+            const resposta = await fetch("https://techmatch-backend-bo92.onrender.com/api/Usuarios", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    nome: nome,
+                    email: email,
+                    senha: senha
+                })
+            });
+
+            if (resposta.ok) {
+                alert("Usuário cadastrado com sucesso!");
+                window.location.href = "techmatchTelaInicial.html";
+            } else {
+                const erro = await resposta.text();
+                alert("Erro ao cadastrar: " + erro);
+            }
+
+        } catch (erro) {
+            alert("Não foi possível conectar ao servidor.");
+            console.error(erro);
+        }
     });
 </script>
 </body>
