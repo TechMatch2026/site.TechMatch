@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Criar conta - TechMatch</title>
+
+    <link rel="icon" type="image/png" href="techmatch_robozinho.png">
+
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial;
+            background: #f2f2f2;
+        }
+
+        .cadastro {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 0 10px #ccc;
+        }
+
+        input,
+        button {
+            display: block;
+            width: 250px;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .voltar {
+            background: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="cadastro">
+
+        <h1>Criar conta</h1>
+
+        <input type="text" id="nome" placeholder="Nome do usuário">
+
+        <input type="email" id="email" placeholder="E-mail">
+
+        <input type="password" id="senha" placeholder="Senha">
+
+        <button id="cadastrar">Criar conta</button>
+
+        <button class="voltar" onclick="window.location.href='index.html'">
+            Voltar
+        </button>
+
+    </div>
+
+
+    <script>
+
+        const botao = document.getElementById("cadastrar");
+
+        botao.addEventListener("click", async function () {
+
+            const nome = document.getElementById("nome").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const senha = document.getElementById("senha").value;
+
+            if (nome === "" || email === "" || senha === "") {
+                alert("Preencha todos os campos!");
+                return;
+            }
+
+            try {
+
+                const resposta = await fetch(
+                    "https://techmatch-backend-bo92.onrender.com/api/Usuarios",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            nome: nome,
+                            email: email,
+                            senha: senha
+                        })
+                    }
+                );
+
+                const mensagem = await resposta.text();
+
+                if (resposta.ok) {
+
+                    alert("Conta criada com sucesso!");
+
+                    window.location.href = "index.html";
+
+                } else {
+
+                    alert(mensagem);
+                }
+
+            } catch (erro) {
+
+                alert("Não foi possível conectar ao servidor.");
+
+                console.error(erro);
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>
