@@ -1,102 +1,266 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
-  <meta charset="UTF-8">
-  <title>TechMatch</title>
-  <link rel="icon" type="image/png" href="techmatch_robozinho.png">
+    <meta charset="UTF-8">
 
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: Arial;
-      background: #f2f2f2;
-    }
+    <title>TechMatch</title>
 
-    .login {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      text-align: center;
-      box-shadow: 0 0 10px #ccc;
-    }
+    <link rel="icon" type="image/png" href="techmatch_robozinho.png">
 
-    input, button {
-      display: block;
-      width: 250px;
-      padding: 10px;
-      margin: 10px 0;
-      box-sizing: border-box;
-    }
+    <style>
 
-    button {
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-  </style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial;
+            background: #f2f2f2;
+        }
+
+        .login {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 0 10px #ccc;
+        }
+
+        input,
+        button {
+            display: block;
+            width: 250px;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .criar {
+            background: #28a745;
+        }
+
+        .escondido {
+            display: none;
+        }
+
+    </style>
+
 </head>
 
 <body>
 
-  <div class="login">
-    <h1>TechMatch</h1>
+    <div class="login">
 
-    <input type="text" placeholder="Nome do usuário" id="nome">
+        <h1>TechMatch</h1>
 
-    <input type="password" placeholder="Senha">
+        <!-- PRIMEIRA ETAPA -->
+        <div id="etapaUsuario">
 
-    <input type="email" placeholder="E-mail">
+            <input
+                type="text"
+                id="nome"
+                placeholder="Nome do usuário"
+            >
 
-    <button id="botao">Entrar</button>
-  </div>
+            <button id="verificarUsuario">
+                Entrar
+            </button>
 
-  <script>
-    let botao = document.getElementById("botao");
+            <button
+                class="criar"
+                onclick="window.location.href='criar-conta.html'"
+            >
+                Criar uma conta
+            </button>
 
-    botao.addEventListener("click", async function() {
+        </div>
 
-        const nome = document.getElementById("nome").value;
-        const senha = document.querySelector('input[type="password"]').value;
-        const email = document.querySelector('input[type="email"]').value;
 
-        if (nome === "" || senha === "" || email === "") {
-            alert("Preencha todos os campos!");
-            return;
-        }
+        <!-- SEGUNDA ETAPA -->
+        <div id="etapaLogin" class="escondido">
 
-        try {
-            const resposta = await fetch("https://techmatch-backend-bo92.onrender.com/api/Usuarios", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    nome: nome,
-                    email: email,
-                    senha: senha
-                })
-            });
+            <input
+                type="email"
+                id="email"
+                placeholder="E-mail"
+            >
 
-            if (resposta.ok) {
-                alert("Usuário cadastrado com sucesso!");
-                window.location.href = "techmatchTelaInicial.html";
-            } else {
-                const erro = await resposta.text();
-                alert("Erro ao cadastrar: " + erro);
+            <input
+                type="password"
+                id="senha"
+                placeholder="Senha"
+            >
+
+            <button id="confirmarLogin">
+                Confirmar login
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        const verificarUsuario =
+            document.getElementById("verificarUsuario");
+
+        const confirmarLogin =
+            document.getElementById("confirmarLogin");
+
+
+        // PRIMEIRO: VERIFICAR SE O USUÁRIO EXISTE
+
+        verificarUsuario.addEventListener("click", async function () {
+
+            const nome =
+                document.getElementById("nome").value.trim();
+
+
+            if (nome === "") {
+
+                alert("Digite o nome do usuário!");
+
+                return;
             }
 
-        } catch (erro) {
-            alert("Não foi possível conectar ao servidor.");
-            console.error(erro);
-        }
-    });
-  </script>
+
+            try {
+
+                const resposta = await fetch(
+                    "https://techmatch-backend-bo92.onrender.com/api/Usuarios/login",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            nome: nome,
+                            email: "",
+                            senha: ""
+                        })
+                    }
+                );
+
+
+                /*
+                 * Aqui o backend pode responder:
+                 *
+                 * 404 = usuário não existe
+                 * 401 = usuário existe, mas ainda falta
+                 *      conferir e-mail e senha
+                 */
+
+                if (resposta.status === 404) {
+
+                    alert("Usuário não encontrado.");
+
+                    return;
+                }
+
+
+                // Usuário existe.
+                // Agora mostramos e-mail e senha.
+
+                document.getElementById("etapaUsuario")
+                    .classList.add("escondido");
+
+                document.getElementById("etapaLogin")
+                    .classList.remove("escondido");
+
+            }
+            catch (erro) {
+
+                alert("Não foi possível conectar ao servidor.");
+
+                console.error(erro);
+            }
+
+        });
+
+
+        // SEGUNDO: CONFERIR E-MAIL E SENHA
+
+        confirmarLogin.addEventListener("click", async function () {
+
+            const nome =
+                document.getElementById("nome").value.trim();
+
+            const email =
+                document.getElementById("email").value.trim();
+
+            const senha =
+                document.getElementById("senha").value;
+
+
+            if (email === "" || senha === "") {
+
+                alert("Preencha o e-mail e a senha!");
+
+                return;
+            }
+
+
+            try {
+
+                const resposta = await fetch(
+                    "https://techmatch-backend-bo92.onrender.com/api/Usuarios/login",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            nome: nome,
+                            email: email,
+                            senha: senha
+                        })
+                    }
+                );
+
+
+                if (resposta.ok) {
+
+                    alert("Login realizado com sucesso!");
+
+                    window.location.href =
+                        "techmatchTelaInicial.html";
+
+                }
+                else {
+
+                    const mensagem =
+                        await resposta.text();
+
+                    alert(mensagem);
+                }
+
+            }
+            catch (erro) {
+
+                alert("Não foi possível conectar ao servidor.");
+
+                console.error(erro);
+            }
+
+        });
+
+    </script>
 
 </body>
+
 </html>
