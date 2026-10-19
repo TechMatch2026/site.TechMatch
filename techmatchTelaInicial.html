@@ -7,161 +7,159 @@
     <link rel="icon" type="image/png" href="techmatch_robozinho.png">
 
     <style>
+
+        * { box-sizing: border-box; }
         body {
             margin: 0;
-            font-family: Arial;
-            background: #f5f5f5;
-            color: #081129;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f7f9fa;
+            color: #17233d;
         }
-
-        header {
-            background: #081129;
-            color: white;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        header img {
-            width: 55px;
-            height: 55px;
-            object-fit: contain;
-        }
-
-        header h1 {
-            margin: 0;
-        }
-
-        header span {
-            color: #62bff0;
-        }
-
+        header { display: none; }
         .principal {
-            width: 90%;
-            max-width: 1000px;
-            margin: 30px auto;
-            text-align: center;
-        }
-
-        .principal h2 {
-            color: #081129;
-            font-size: 30px;
-        }
-
-        .principal > p {
-            color: #667085;
-        }
-
-        .grupo {
-            margin-top: 35px;
-        }
-
-        .grupo h2 {
-            font-size: 22px;
+            width: min(1180px, calc(100% - 48px));
+            margin: 34px auto 48px;
             text-align: left;
-            border-left: 5px solid #6c50fb;
-            padding-left: 10px;
         }
-
+        .principal h2 {
+            color: #17233d;
+            font-size: 30px;
+            letter-spacing: -0.6px;
+            margin: 0 0 8px;
+        }
+        .principal > p {
+            color: #7a8798;
+            margin: 6px 0;
+            line-height: 1.5;
+        }
+        .principal > p[style] {
+            font-size: 13px !important;
+            margin-top: 8px;
+        }
+        .grupo {
+            margin-top: 30px;
+        }
+        .grupo h2 {
+            font-size: 19px;
+            text-align: left;
+            border-left: 4px solid #22aaa8;
+            padding: 3px 0 3px 12px;
+            margin: 0 0 16px;
+        }
+        .grupo h2 span {
+            font-weight: 500;
+        }
         .opcoes {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 18px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
         }
-
         .peca {
-            background: white;
+            background: #fff;
             width: auto;
-            min-height: 250px;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 12px;
+            min-height: 270px;
+            padding: 14px;
+            border: 1px solid #e7edf0;
+            border-radius: 13px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+            box-shadow: 0 2px 8px rgba(23, 35, 61, .025);
         }
-
         .peca:hover {
-            border-color: #62bff0;
-            transform: translateY(-3px);
+            border-color: #83d4d1;
+            box-shadow: 0 7px 18px rgba(31, 147, 148, .09);
+            transform: translateY(-2px);
         }
-
         .peca.selecionada {
-            border: 3px solid #6c50fb;
-            background: #f1efff;
+            border: 2px solid #20aaa7;
+            padding: 13px;
+            background: #f2fbfa;
+            box-shadow: 0 0 0 3px rgba(32, 170, 167, .08);
         }
-
         .peca img {
+            display: block;
             width: 100%;
-            height: 130px;
+            height: 145px;
             object-fit: contain;
+            padding: 8px;
+            margin-bottom: 12px;
+            border-radius: 9px;
+            background: #f6f9fa;
         }
-
         .nome {
-            font-weight: bold;
+            font-weight: 700;
+            font-size: 14px;
+            line-height: 1.4;
+            margin: 8px 0;
+            min-height: 39px;
         }
-
         .preco {
-            color: #fd7d01;
-            font-size: 19px;
-            font-weight: bold;
+            color: #17233d;
+            font-size: 17px;
+            font-weight: 700;
+            margin: 10px 0 7px;
         }
-
+        .peca small {
+            color: #8792a2;
+            font-size: 11px;
+            line-height: 1.5;
+        }
         button {
             margin-top: 30px;
-            padding: 13px 25px;
-            background: #6c50fb;
+            padding: 13px 22px;
+            background: #20aaa7;
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 700;
             cursor: pointer;
+            transition: background .2s ease, transform .2s ease;
         }
-
         button:hover {
-            background: #d620ff;
+            background: #168f8d;
+            transform: translateY(-1px);
         }
-
         #resultado {
-            margin-top: 25px;
-            font-size: 17px;
-            font-weight: bold;
+            margin-top: 22px;
+            padding: 18px 20px;
+            border: 1px solid #e7edf0;
+            border-radius: 12px;
+            background: #fff;
+            font-size: 15px;
+            font-weight: 600;
         }
-
+        #resultado:empty { display: none; }
         #total {
-            color: #6c50fb;
-            font-size: 22px;
-            font-weight: bold;
+            display: inline-block;
+            margin: 22px 0 0 16px;
+            color: #17233d;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .rodape { display: none; }
+        @media (max-width: 980px) {
+            .opcoes { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
+        @media (max-width: 700px) {
+            .principal { width: calc(100% - 28px); margin-top: 24px; }
+            .principal h2 { font-size: 25px; }
+            .opcoes { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+            .peca { padding: 10px; min-height: 245px; }
+            .peca img { height: 115px; }
+            .peca.selecionada { padding: 9px; }
+            #total { display: block; margin-left: 0; }
+        }
+        @media (max-width: 420px) {
+            .opcoes { grid-template-columns: 1fr; }
+            .peca { min-height: 0; }
         }
 
-        .rodape {
-            margin-top: 40px;
-            padding: 20px;
-            background: #081129;
-            color: white;
-        }
-
-        @media (max-width: 650px) {
-            .opcoes {
-                grid-template-columns: 1fr;
-            }
-
-            .peca {
-                width: auto;
-            }
-        }
     </style>
 </head>
 
 <body>
-
-    <header>
-        <img src="techmatch_robozinho.png" alt="Robô TechMatch">
-        <h1>Tech<span>Match</span></h1>
-    </header>
-
-    <div class="principal">
+<div class="principal">
         <h2>Monte seu PC</h2>
         <p>Escolha as peças e veja se elas são compatíveis.</p>
         <p style="font-size:14px;color:#667085;">As 7 primeiras categorias são obrigatórias. Os periféricos são opcionais.</p>
@@ -170,11 +168,7 @@
         <div id="resultado" style="margin-top:25px;"></div>
         <p id="total">Total: R$ 0,00</p>
     </div>
-
-    <div class="rodape">
-        TechMatch - Busque. Compare. Dê Match.
-    </div>
-    <script>
+<script>
 const catalogo = {"processador":[{"nome":"Intel Core i5-4570","socket":"LGA1150","preco":155,"tdp":65},{"nome":"Intel Core i7-4790","socket":"LGA1150","preco":380,"tdp":84},{"nome":"Intel Core i5-10400F","socket":"LGA1200","preco":910,"tdp":65},{"nome":"Intel Core i7-10700F","socket":"LGA1200","preco":1800,"tdp":65},{"nome":"Intel Core i3-12100F","socket":"LGA1700","preco":730,"tdp":58},{"nome":"Intel Core i5-12400F","socket":"LGA1700","preco":790,"tdp":65},{"nome":"Intel Core i5-13400F","socket":"LGA1700","preco":1000,"tdp":148},{"nome":"Intel Core i5-14400F","socket":"LGA1700","preco":1100,"tdp":148},{"nome":"AMD Ryzen 5 3600","socket":"AM4","preco":600,"tdp":65},{"nome":"AMD Ryzen 5 4500","socket":"AM4","preco":590,"tdp":65},{"nome":"AMD Ryzen 5 5500","socket":"AM4","preco":565,"tdp":65},{"nome":"AMD Ryzen 5 5600","socket":"AM4","preco":1080,"tdp":65},{"nome":"AMD Ryzen 7 5700X","socket":"AM4","preco":1200,"tdp":65},{"nome":"AMD Ryzen 7 5700X3D","socket":"AM4","preco":1700,"tdp":105},{"nome":"AMD Ryzen 5 7600","socket":"AM5","preco":1200,"tdp":65},{"nome":"AMD Ryzen 7 7700","socket":"AM5","preco":1860,"tdp":65},{"nome":"AMD Ryzen 5 8400F","socket":"AM5","preco":760,"tdp":65},{"nome":"AMD Ryzen 5 8600G","socket":"AM5","preco":1200,"tdp":65},{"nome":"Intel Core i5-12400","socket":"LGA1700","preco":900,"tdp":117},{"nome":"Intel Core i7-12700F","socket":"LGA1700","preco":2272,"tdp":180}],"placaMae":[{"nome":"ASRock H81M-HG4","socket":"LGA1150","ram":"DDR3","formato":"M-ATX","nvme":false,"slots":4,"preco":450},{"nome":"Gigabyte GA-H81M-S1","socket":"LGA1150","ram":"DDR3","formato":"M-ATX","nvme":false,"slots":4,"preco":300},{"nome":"ASUS H81M-A","socket":"LGA1150","ram":"DDR3","formato":"M-ATX","nvme":false,"slots":4,"preco":300},{"nome":"MSI H81M-E33","socket":"LGA1150","ram":"DDR3","formato":"M-ATX","nvme":false,"slots":4,"preco":513},{"nome":"ASUS PRIME H410M-E","socket":"LGA1200","ram":"DDR4","formato":"M-ATX","nvme":false,"slots":6,"preco":870},{"nome":"Gigabyte H410M H V3","socket":"LGA1200","ram":"DDR4","formato":"M-ATX","nvme":false,"slots":6,"preco":629},{"nome":"MSI MAG B560M Mortar","socket":"LGA1200","ram":"DDR4","formato":"M-ATX","nvme":true,"slots":6,"preco":1249},{"nome":"ASUS TUF Gaming B560M-PLUS","socket":"LGA1200","ram":"DDR4","formato":"M-ATX","nvme":true,"slots":6,"preco":1158},{"nome":"ASUS PRIME H610M-A","socket":"LGA1700","ram":"DDR5","formato":"M-ATX","nvme":true,"slots":4,"preco":1023},{"nome":"MSI PRO H610M-G","socket":"LGA1700","ram":"DDR4","formato":"M-ATX","nvme":false,"slots":4,"preco":695},{"nome":"Gigabyte B660M DS3H AX DDR4","socket":"LGA1700","ram":"DDR4","formato":"M-ATX","nvme":true,"slots":4,"preco":1029},{"nome":"ASUS TUF Gaming B660M-PLUS WIFI D4","socket":"LGA1700","ram":"DDR4","formato":"M-ATX","nvme":true,"slots":4,"preco":1449},{"nome":"MSI PRO B760M-A WIFI DDR5","socket":"LGA1700","ram":"DDR5","formato":"M-ATX","nvme":true,"slots":4,"preco":1470},{"nome":"Gigabyte B760M AORUS Elite AX DDR5","socket":"LGA1700","ram":"DDR5","formato":"M-ATX","nvme":true,"slots":4,"preco":1939},{"nome":"ASRock B450M Steel Legend","socket":"AM4","ram":"DDR4","formato":"M-ATX","nvme":true,"slots":4,"preco":762},{"nome":"MSI B450M PRO-VDH MAX","socket":"AM4","ram":"DDR4","formato":"M-ATX","nvme":true,"slots":4,"preco":729},{"nome":"ASUS TUF Gaming B550M-PLUS","socket":"AM4","ram":"DDR4","formato":"M-ATX","nvme":true,"slots":4,"preco":941},{"nome":"MSI MAG B550 Tomahawk","socket":"AM4","ram":"DDR4","formato":"ATX","nvme":true,"slots":4,"preco":1529},{"nome":"ASUS PRIME B650M-A WIFI","socket":"AM5","ram":"DDR5","formato":"M-ATX","nvme":true,"slots":4,"preco":1470},{"nome":"MSI PRO B650-S WIFI","socket":"AM5","ram":"DDR5","formato":"ATX","nvme":true,"slots":4,"preco":1597}],"ram":[{"nome":"Kingston ValueRAM 8GB DDR3 1600MHz","tipo":"DDR3","capacidade":8,"frequencia":1600,"preco":110},{"nome":"Kingston Fury 16GB (2x8) DDR3 1600MHz","tipo":"DDR3","capacidade":16,"frequencia":1600,"preco":300},{"nome":"HyperX Fury 8GB DDR3 1866MHz","tipo":"DDR3","capacidade":8,"frequencia":1866,"preco":269},{"nome":"Corsair Vengeance 16GB (2x8) DDR3 1600MHz","tipo":"DDR3","capacidade":16,"frequencia":1600,"preco":799},{"nome":"Kingston Fury Beast 8GB DDR4 3200MHz","tipo":"DDR4","capacidade":8,"frequencia":3200,"preco":408},{"nome":"Kingston Fury Beast 16GB DDR4 3200MHz","tipo":"DDR4","capacidade":16,"frequencia":3200,"preco":898},{"nome":"Kingston Fury Beast 32GB (2x16) DDR4 3200MHz","tipo":"DDR4","capacidade":32,"frequencia":3200,"preco":2999},{"nome":"Corsair Vengeance LPX 16GB DDR4 3200MHz","tipo":"DDR4","capacidade":16,"frequencia":3200,"preco":1271},{"nome":"Corsair Vengeance LPX 32GB (2x16) DDR4 3200MHz","tipo":"DDR4","capacidade":32,"frequencia":3200,"preco":2039},{"nome":"XPG GAMMIX D10 8GB DDR4 3200MHz","tipo":"DDR4","capacidade":8,"frequencia":3200,"preco":800},{"nome":"XPG Gammix D35 16GB DDR4 3200MHz","tipo":"DDR4","capacidade":16,"frequencia":3200,"preco":1049},{"nome":"TeamGroup T-Force Vulcan 16GB DDR4 3200MHz","tipo":"DDR4","capacidade":16,"frequencia":3200,"preco":1300},{"nome":"Kingston Fury Beast 16GB DDR5 5200MHz","tipo":"DDR5","capacidade":16,"frequencia":5200,"preco":1749},{"nome":"Kingston Fury Beast 32GB (2x16) DDR5 5600MHz","tipo":"DDR5","capacidade":32,"frequencia":5600,"preco":3999},{"nome":"Corsair Vengeance 16GB DDR5 5200MHz","tipo":"DDR5","capacidade":16,"frequencia":5200,"preco":2000},{"nome":"Corsair Vengeance 32GB (2x16) DDR5 6000MHz","tipo":"DDR5","capacidade":32,"frequencia":6000,"preco":3878},{"nome":"XPG Lancer 16GB DDR5 5200MHz","tipo":"DDR5","capacidade":16,"frequencia":5200,"preco":1799},{"nome":"XPG Lancer 32GB (2x16) DDR5 6000MHz","tipo":"DDR5","capacidade":32,"frequencia":6000,"preco":3349},{"nome":"TeamGroup T-Force Delta RGB 32GB DDR5 6000MHz","tipo":"DDR5","capacidade":32,"frequencia":6000,"preco":4959},{"nome":"G.Skill Ripjaws S5 32GB (2x16) DDR5 6000MHz","tipo":"DDR5","capacidade":32,"frequencia":6000,"preco":1894}],"armazenamento":[{"nome":"Kingston A400 480GB SSD","interface":"SATA","capacidade":480,"velocidade":500,"preco":570},{"nome":"Kingston A400 960GB SSD","interface":"SATA","capacidade":960,"velocidade":500,"preco":799},{"nome":"Crucial BX500 480GB SSD","interface":"SATA","capacidade":480,"velocidade":540,"preco":646},{"nome":"Crucial BX500 1TB SSD","interface":"SATA","capacidade":1000,"velocidade":540,"preco":949},{"nome":"WD Green 480GB SSD","interface":"SATA","capacidade":480,"velocidade":545,"preco":459},{"nome":"WD Blue 1TB SATA SSD","interface":"SATA","capacidade":1000,"velocidade":560,"preco":1099},{"nome":"Samsung 870 EVO 500GB","interface":"SATA","capacidade":500,"velocidade":550,"preco":853},{"nome":"Samsung 870 EVO 1TB","interface":"SATA","capacidade":1000,"velocidade":560,"preco":1841},{"nome":"Kingston NV2 500GB","interface":"NVMe","capacidade":500,"velocidade":3500,"preco":679},{"nome":"Kingston NV2 1TB","interface":"NVMe","capacidade":1000,"velocidade":3500,"preco":1029},{"nome":"WD Blue SN580 500GB","interface":"NVMe","capacidade":500,"velocidade":4000,"preco":738},{"nome":"WD Blue SN580 1TB","interface":"NVMe","capacidade":1000,"velocidade":4150,"preco":998},{"nome":"WD Black SN770 1TB","interface":"NVMe","capacidade":1000,"velocidade":5150,"preco":640},{"nome":"WD Black SN850X 1TB","interface":"NVMe","capacidade":1000,"velocidade":7300,"preco":1998},{"nome":"Samsung 990 EVO 1TB","interface":"NVMe","capacidade":1000,"velocidade":5000,"preco":1899},{"nome":"Samsung 990 PRO 1TB","interface":"NVMe","capacidade":1000,"velocidade":7450,"preco":2138},{"nome":"Crucial P3 Plus 1TB","interface":"NVMe","capacidade":1000,"velocidade":5000,"preco":1788},{"nome":"Crucial P5 Plus 1TB","interface":"NVMe","capacidade":1000,"velocidade":6600,"preco":1499},{"nome":"Seagate Barracuda 1TB HDD","interface":"SATA","capacidade":1000,"velocidade":210,"preco":465},{"nome":"Seagate Barracuda 2TB HDD","interface":"SATA","capacidade":2000,"velocidade":210,"preco":862}],"gpu":[{"nome":"NVIDIA GTX 1650 4GB","consumo":75,"preco":1641},{"nome":"NVIDIA GTX 1660 Super 6GB","consumo":125,"preco":1359},{"nome":"NVIDIA RTX 2060 6GB","consumo":160,"preco":1353},{"nome":"NVIDIA RTX 3060 12GB","consumo":170,"preco":2041},{"nome":"NVIDIA RTX 3060 Ti 8GB","consumo":200,"preco":2337},{"nome":"NVIDIA RTX 4060 8GB","consumo":115,"preco":2299},{"nome":"NVIDIA RTX 4060 Ti 8GB","consumo":160,"preco":2499},{"nome":"NVIDIA RTX 4060 Ti 16GB","consumo":165,"preco":4178},{"nome":"NVIDIA RTX 4070 12GB","consumo":200,"preco":5863},{"nome":"NVIDIA RTX 4070 SUPER 12GB","consumo":220,"preco":6999},{"nome":"NVIDIA RTX 4070 Ti SUPER 16GB","consumo":285,"preco":11048},{"nome":"NVIDIA RTX 4080 SUPER 16GB","consumo":320,"preco":12889},{"nome":"AMD Radeon RX 6600 8GB","consumo":132,"preco":2307},{"nome":"AMD Radeon RX 6650 XT 8GB","consumo":176,"preco":2305},{"nome":"AMD Radeon RX 7600 8GB","consumo":165,"preco":2305},{"nome":"AMD Radeon RX 7600 XT 16GB","consumo":190,"preco":3655},{"nome":"AMD Radeon RX 7700 XT 12GB","consumo":245,"preco":3259},{"nome":"AMD Radeon RX 7800 XT 16GB","consumo":263,"preco":4199},{"nome":"AMD Radeon RX 7900 GRE 16GB","consumo":260,"preco":4680},{"nome":"AMD Radeon RX 7900 XTX 24GB","consumo":355,"preco":8865}],"fonte":[{"nome":"MSI MAG A550BN 550W","potencia":550,"preco":330},{"nome":"MSI MAG A650BN 650W","potencia":650,"preco":380},{"nome":"MSI MAG A750BN 750W","potencia":750,"preco":510},{"nome":"MSI MAG A850GL 850W","potencia":850,"preco":630},{"nome":"Corsair CV550 550W","potencia":550,"preco":430},{"nome":"Corsair CV650 650W","potencia":650,"preco":460},{"nome":"Corsair CX650 650W","potencia":650,"preco":425},{"nome":"Corsair CX750 750W","potencia":750,"preco":530},{"nome":"Corsair RM750e 750W","potencia":750,"preco":580},{"nome":"Corsair RM850e 850W","potencia":850,"preco":840},{"nome":"Cooler Master MWE 550 Bronze V2","potencia":550,"preco":380},{"nome":"Cooler Master MWE 650 Bronze V2","potencia":650,"preco":450},{"nome":"Cooler Master MWE 750 Bronze V2","potencia":750,"preco":540},{"nome":"Cooler Master GX III 850W Gold","potencia":850,"preco":750},{"nome":"XPG Pylon 550W","potencia":550,"preco":389},{"nome":"XPG Core Reactor 650W","potencia":650,"preco":400},{"nome":"XPG Core Reactor II 750W","potencia":750,"preco":439},{"nome":"be quiet! System Power 10 650W","potencia":650,"preco":470},{"nome":"be quiet! Pure Power 12 M 750W","potencia":750,"preco":680},{"nome":"Seasonic Focus GX-850","potencia":850,"preco":850}],"gabinete":[{"nome":"Rise Mode Galaxy Full Glass","suporta":"ATX/M-ATX/ITX","gpu":400,"cooler":300,"preco":643},{"nome":"Rise Mode Z3 Glass","suporta":"ATX/M-ATX","gpu":400,"cooler":300,"preco":139},{"nome":"Rise Mode Glass 06X","suporta":"ATX/M-ATX/ITX","gpu":400,"cooler":300,"preco":120},{"nome":"Rise Mode Glass 03","suporta":"ATX/M-ATX/ITX","gpu":355,"cooler":300,"preco":266},{"nome":"Rise Mode Wave Black","suporta":"ATX/M-ATX/ITX","gpu":320,"cooler":157,"preco":260},{"nome":"Rise Mode Wave White","suporta":"ATX/M-ATX/ITX","gpu":320,"cooler":157,"preco":260},{"nome":"NZXT H5 Flow","suporta":"ATX/M-ATX/Mini-ITX","gpu":365,"cooler":165,"preco":650},{"nome":"NZXT H6 Flow","suporta":"ATX/M-ATX/Mini-ITX","gpu":365,"cooler":163,"preco":807},{"nome":"Corsair 4000D Airflow","suporta":"ATX/M-ATX/Mini-ITX","gpu":360,"cooler":170,"preco":360},{"nome":"Corsair 3000D Airflow","suporta":"ATX/M-ATX/Mini-ITX","gpu":360,"cooler":170,"preco":479},{"nome":"Cooler Master TD500 Mesh V2","suporta":"ATX/M-ATX/Mini-ITX","gpu":410,"cooler":165,"preco":283},{"nome":"Cooler Master MasterBox Q300L","suporta":"M-ATX/Mini-ITX","gpu":360,"cooler":157,"preco":529},{"nome":"Montech Air 100 ARGB","suporta":"M-ATX/Mini-ITX","gpu":330,"cooler":161,"preco":325},{"nome":"Montech Air 903 Max","suporta":"ATX/M-ATX/Mini-ITX","gpu":400,"cooler":180,"preco":1208},{"nome":"Lian Li Lancool 216","suporta":"ATX/M-ATX/Mini-ITX","gpu":392,"cooler":180,"preco":649},{"nome":"Lian Li Lancool III","suporta":"ATX/M-ATX/Mini-ITX","gpu":435,"cooler":187,"preco":558},{"nome":"Galax Revolution 05","suporta":"ATX/M-ATX/ITX","gpu":360,"cooler":160,"preco":317},{"nome":"Pichau Kazan 2","suporta":"ATX/M-ATX/ITX","gpu":320,"cooler":160,"preco":127},{"nome":"Pichau Apus","suporta":"ATX/M-ATX/ITX","gpu":315,"cooler":160,"preco":199},{"nome":"Aerocool Trinity Mini","suporta":"M-ATX/Mini-ITX","gpu":300,"cooler":148,"preco":336}],"mouse":[{"nome":"Logitech G203 Lightsync","preco":100},{"nome":"Logitech G305 Lightspeed","preco":179},{"nome":"Logitech G502 Hero","preco":319},{"nome":"Logitech G502 X","preco":669},{"nome":"Razer DeathAdder Essential","preco":169},{"nome":"Razer DeathAdder V2","preco":395},{"nome":"Razer Basilisk V3","preco":376},{"nome":"Razer Viper Mini","preco":213},{"nome":"Redragon Cobra M711","preco":71},{"nome":"Redragon King Cobra M711-FPS","preco":184},{"nome":"Redragon Griffin M607","preco":108},{"nome":"HyperX Pulsefire Haste","preco":149},{"nome":"HyperX Pulsefire Haste 2","preco":159},{"nome":"Corsair Harpoon RGB Pro","preco":189},{"nome":"Corsair Katar Pro","preco":124},{"nome":"Fortrek Crusader","preco":57},{"nome":"Cooler Master MM710","preco":105},{"nome":"Glorious Model O","preco":180},{"nome":"AOC GM500","preco":129},{"nome":"Dell MS116","preco":69}],"teclado":[{"nome":"Redragon Kumara K552","preco":208},{"nome":"Redragon Mitra K551","preco":258},{"nome":"Redragon Fizz K617","preco":179},{"nome":"Logitech G213","preco":374},{"nome":"Logitech G413","preco":489},{"nome":"Logitech K120","preco":65},{"nome":"Logitech G915","preco":1199},{"nome":"HyperX Alloy Origins","preco":499},{"nome":"HyperX Alloy Core RGB","preco":379},{"nome":"Razer Cynosa Lite","preco":276},{"nome":"Razer BlackWidow V3","preco":709},{"nome":"Razer Huntsman Mini","preco":1026},{"nome":"Corsair K55 RGB Pro","preco":363},{"nome":"Corsair K60 Pro TKL","preco":294},{"nome":"Corsair K70 RGB","preco":619},{"nome":"Fortrek Black Hawk","preco":192},{"nome":"Cooler Master CK552","preco":299},{"nome":"AOC GK500","preco":224},{"nome":"Multilaser Warrior TC196","preco":199},{"nome":"Dell KB216","preco":92}],"som":[{"nome":"Creative Pebble 2.0","preco":223},{"nome":"Creative Pebble V3","preco":213},{"nome":"Edifier R19U","preco":299},{"nome":"Edifier R1000T4","preco":720},{"nome":"Logitech Z120","preco":165},{"nome":"Logitech Z150","preco":283},{"nome":"Logitech Z200","preco":100},{"nome":"Logitech Z207","preco":284},{"nome":"Trust Arys","preco":247},{"nome":"Redragon GS520","preco":162},{"nome":"Redragon GS560","preco":163},{"nome":"Redragon GS550","preco":125},{"nome":"Fortrek Black Eagle","preco":100},{"nome":"Fortrek Gamer RGB","preco":94},{"nome":"Multilaser SP172","preco":97},{"nome":"Logitech Z213","preco":118},{"nome":"Knup KP-RO801","preco":143},{"nome":"C3Tech SP-301","preco":28},{"nome":"OEX SK401","preco":202},{"nome":"Edifier M1360","preco":200}],"headset":[{"nome":"HyperX Cloud Stinger 2","preco":151},{"nome":"HyperX Cloud II","preco":170},{"nome":"HyperX Cloud III","preco":409},{"nome":"Logitech G435","preco":379},{"nome":"Logitech G432","preco":429},{"nome":"Logitech G733","preco":800},{"nome":"Razer Kraken X Lite","preco":173},{"nome":"Razer BlackShark V2 X","preco":419},{"nome":"Razer Barracuda X","preco":799},{"nome":"Redragon Zeus 2","preco":668},{"nome":"Redragon Zeus Pro","preco":320},{"nome":"Redragon Lamia 2","preco":458},{"nome":"Corsair HS55","preco":495},{"nome":"Corsair HS65","preco":600},{"nome":"Corsair HS80 RGB USB","preco":800},{"nome":"JBL Quantum 100","preco":179},{"nome":"JBL Quantum 200","preco":349},{"nome":"Fortrek H2 Gamer","preco":70},{"nome":"AOC GH300","preco":200},{"nome":"Havit H2002D","preco":172}]};
 const imagens = {
     "processador": "https://images.kabum.com.br/produtos/fotos/333154/processador-amd-ryzen-5-4500-cache-11mb-3-6ghz-4-1ghz-max-turbo-am4-sem-video-100-100000644box_1652381901_gg.jpg",
