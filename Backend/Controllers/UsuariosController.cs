@@ -17,6 +17,22 @@ namespace TechMatch.backend.Controllers
 
                 using (MySqlConnection banco = conexao.Conectar())
                 {
+                    // Verifica se o nome já existe
+                    string verificarSql =
+                        "SELECT COUNT(*) FROM usuarios WHERE nome = @nome";
+
+                    using (MySqlCommand verificar = new MySqlCommand(verificarSql, banco))
+                    {
+                        verificar.Parameters.AddWithValue("@nome", usuario.Nome);
+
+                        int quantidade = Convert.ToInt32(verificar.ExecuteScalar());
+
+                        if (quantidade > 0)
+                        {
+                            return Conflict("Esse usuário já existe.");
+                        }
+                    }
+
                     // Cadastra o novo usuário
                     string sql =
                         "INSERT INTO usuarios (nome, email, senha) " +
@@ -29,7 +45,7 @@ namespace TechMatch.backend.Controllers
                         comando.Parameters.AddWithValue("@senha", usuario.Senha);
 
                         comando.ExecuteNonQuery();
-                                           }
+                    }
                 }
 
                 return Ok("Usuário cadastrado com sucesso!");
