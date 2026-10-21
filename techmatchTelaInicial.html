@@ -120,6 +120,16 @@
             background: #168f8d;
             transform: translateY(-1px);
         }
+        .botao-voltar {
+            margin-right: 10px;
+            background: #ffffff;
+            color: #087f91;
+            border: 1px solid #cfe6e6;
+            box-shadow: none;
+        }
+        .botao-voltar:hover {
+            background: #f0fbfb;
+        }
         #resultado {
             margin-top: 22px;
             padding: 18px 20px;
@@ -163,6 +173,7 @@
         <h2>Monte seu PC</h2>
         <p>Escolha as peças e veja se elas são compatíveis.</p>
         <p style="font-size:14px;color:#667085;">As 7 primeiras categorias são obrigatórias. Os periféricos são opcionais.</p>
+        <button class="botao-voltar" onclick="window.location.href='index.html'">← Voltar ao início</button>
         <div id="catalogo"></div>
         <button onclick="verificar()">Verificar compatibilidade</button>
         <div id="resultado" style="margin-top:25px;"></div>
